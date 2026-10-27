@@ -2,6 +2,14 @@
 
 All notable changes to mockship. Versions follow [Semantic Versioning](https://semver.org).
 
+## Unreleased
+
+### Evals
+
+- `keeps-draft-until-approver-named` reads the Decisions entry from `MOCK.md` itself, instead
+  of asking a judge that only sees the start and end of the run.
+- Every case re-run on 1.3.0; the README table now comes from a single version.
+
 ## 1.3.0 - 2026-10-28
 
 ### Skills

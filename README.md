@@ -190,32 +190,33 @@ cd skills/ui-to-mock && claude plugin eval . --scaffold --allow-tools Write,Edit
 These are real model runs that you pay for. Each case sets up a fresh copy of the sample app
 and can take several minutes.
 
-Latest results with Claude Opus 5.5, one run per case. Cases marked "1.1" were last run on
-1.1.x; the others on 1.2 or 1.3.
+Latest results: version 1.3.0, Claude Opus 5.5, one run per case, 2026-10-28.
 
 | Skill | Case | With skill | Without |
 | --- | --- | --- | --- |
 | ui-to-mock | builds-flagged-invoices-mock | 1.00 | 0.27 |
-| ui-to-mock | keeps-draft-until-approver-named | 1.00 | 0.50 |
-| ui-to-mock | offers-options-when-no-flag-system (1.1) | 1.00 | 0.25 |
-| ui-to-mock | keeps-shared-badge-read-only (1.1) | 1.00 | 0.75 |
+| ui-to-mock | offers-options-when-no-flag-system | 1.00 | 0.25 |
+| ui-to-mock | keeps-shared-badge-read-only | 1.00 | 0.75 |
+| ui-to-mock | keeps-draft-until-approver-named | 1.00 | 1.00 |
 | ui-to-mock | ignores-test-double-requests | 1.00 | 1.00 |
-| mock-to-ui | asks-for-sign-off-when-draft | 1.00 | 0.33 |
-| mock-to-ui | stops-on-missing-api-operations (1.1) | 1.00 | 0.83 |
+| mock-to-ui | asks-for-sign-off-when-draft | 1.00 | 0.00 |
 | mock-to-ui | promotes-approved-mock-end-to-end | 1.00 | 0.89 |
+| mock-to-ui | stops-on-missing-api-operations | 1.00 | 0.83 |
 | mock-to-ui | extends-shared-badge-for-stand-in | 1.00 | 1.00 |
 | mock-to-ui | edits-draft-mock-without-promoting | 1.00 | 1.00 |
 
 `ignores-test-double-requests` and `edits-draft-mock-without-promoting` check that the skill
 stays out of the way when it should, so a tie with the baseline is the expected result.
 `extends-shared-badge-for-stand-in` also ties and is kept to catch regressions.
+`keeps-draft-until-approver-named` scored 0.50 without the skill on 1.2; in this run the agent
+without the skill also kept the mock in draft and asked who approved it. One run per case is
+noisy, so treat a single tie or gap with care.
 
-In `promotes-approved-mock-end-to-end` (run on 1.3.0, 2026-10-28) both runs finished the
-promotion: real API data, `useCan` access checks, the shared badge extended, both locales,
-tests, type-check and tests passing, and the flag still off. The difference is the hand-off.
-With the skill the agent moved the decisions into a pull request description and deleted
-`MOCK.md`. Without it the agent kept `MOCK.md` and added its decisions there. The grader for
-that step was fixed after the run and re-applied to the saved run.
+In `promotes-approved-mock-end-to-end` both runs finished the promotion: real API data,
+`useCan` access checks, the shared badge extended, both locales, tests, type-check and tests
+passing, and the flag still off. The difference is the hand-off. With the skill the agent moved
+the decisions into a pull request description and deleted `MOCK.md`. Without it the agent kept
+`MOCK.md` and added its decisions there.
 
 Graders read the files a run leaves behind wherever they can, because a judge model only sees
 the first and last twelve messages of a long run.
