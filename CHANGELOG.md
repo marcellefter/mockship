@@ -2,7 +2,28 @@
 
 All notable changes to mockship. Versions follow [Semantic Versioning](https://semver.org).
 
-## 1.2.0 — 2026-10-27
+## 1.3.0 - 2026-10-28
+
+### Skills
+
+- The sign-off line is now `Status: approved by <who> on <YYYY-MM-DD>`. A `MOCK.md` that still
+  uses the 1.2 form (`approved — <who>, <YYYY-MM-DD>`) needs that line rewritten before
+  `mock-to-ui` will accept it.
+- Rewrote both skills, the `MOCK.md` template, the references and the README in plainer
+  English, with no em dashes. The rules themselves are unchanged.
+
+### Evals
+
+- `promotes-approved-mock-end-to-end` checks that `MOCK.md` and `mockData` were deleted by
+  looking for the `rm` commands, instead of asking a judge model that only sees the start and
+  end of a long run.
+
+### CI
+
+- `actions/checkout`, `actions/setup-node` and `actions/setup-python` moved to v7, which run on
+  Node 24.
+
+## 1.2.0 - 2026-10-27
 
 From an independent review aimed at real-world codebases.
 
@@ -36,12 +57,12 @@ From an independent review aimed at real-world codebases.
   mock that must not start a promotion, and a full promotion on a backend-complete fixture.
 - File-content, tool-use and file-existence graders where a judge model is not needed.
 
-## 1.1.2 — 2026-10-27
+## 1.1.2 - 2026-10-27
 
 - `check-tokens.sh`: on Linux (GNU grep) the stylesheet scan also read code files, so copy such
   as "Invoice #1042" failed there. File filters now come before the exclusions.
 
-## 1.1.1 — 2026-10-27
+## 1.1.1 - 2026-10-27
 
 Fixes from a standards and spec review of 1.1.0, and from the first full eval run.
 
@@ -71,7 +92,7 @@ Fixes from a standards and spec review of 1.1.0, and from the first full eval ru
   checks.
 - README states exactly what the end-to-end run found.
 
-## 1.1.0 — 2026-10-27
+## 1.1.0 - 2026-10-27
 
 ### ui-to-mock
 
@@ -112,7 +133,7 @@ Fixes from a standards and spec review of 1.1.0, and from the first full eval ru
 - Sample app fixture (`examples/sample-app`) and eval scaffold.
 - CI: marketplace and Agent Skills validation, check-script tests, sample app checks.
 
-## 1.0.0 — 2026-10-27
+## 1.0.0 - 2026-10-27
 
 - First release: `ui-to-mock` and `mock-to-ui`, extracted and generalised from an internal
   monorepo workflow.

@@ -21,9 +21,9 @@ user when the feature needs per-user rollout.
 
 ## The gate
 
-One component in the feature folder wraps every mock page:
-flags not ready → the app's loading element; flag off → the app's not-found element; flag on →
-the page. Use the app's own loading and not-found elements, not new ones.
+One component in the feature folder wraps every mock page. While flags are not ready it
+renders the app's loading element, with the flag off the app's not-found element, and with the
+flag on the page. Use the app's own loading and not-found elements, not new ones.
 
 ### React (React Router)
 
@@ -74,7 +74,7 @@ The route files are touchpoints; the gate lives in the feature folder.
 ```
 
 ```svelte
-<!-- src/routes/invoices/+layout.svelte — touchpoint: imports and renders, nothing else -->
+<!-- src/routes/invoices/+layout.svelte is a touchpoint: it imports and renders, nothing else -->
 <script lang="ts">
   import InvoicesGate from '$lib/features/invoices/InvoicesGate.svelte';
   let { children } = $props();
@@ -102,7 +102,7 @@ export async function InvoicesGate({ children }: { children: React.ReactNode }) 
 ```
 
 ```tsx
-// app/invoices/page.tsx — touchpoint: imports and renders, nothing else
+// app/invoices/page.tsx is a touchpoint: it imports and renders, nothing else
 import { InvoiceListPage, InvoicesGate } from '@/features/invoices';
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ scenario?: string }> }) {

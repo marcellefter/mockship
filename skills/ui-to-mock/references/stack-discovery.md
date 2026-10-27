@@ -1,7 +1,7 @@
 # Stack discovery
 
 Answer each question from the code before building, and write the answers under _Stack_ in
-`MOCK.md`. `mock-to-ui` relies on them. When an answer is "none", write "none" — never assume.
+`MOCK.md`. `mock-to-ui` relies on them. When an answer is "none", write "none". Don't guess.
 
 ## 0. Which app?
 
@@ -15,13 +15,13 @@ Look at the app's `package.json` dependencies and its entry file.
 | Signal | Stack |
 | --- | --- |
 | `react-router`, `react-router-dom`, `@tanstack/react-router` | React SPA router |
-| `next` | Next.js — check `app/` (App Router) vs `pages/` |
+| `next` | Next.js: check for `app/` (App Router) or `pages/` |
 | `vue-router`, `nuxt` | Vue / Nuxt |
 | `@sveltejs/kit` | SvelteKit (file-based routes under `src/routes/`) |
 | `@angular/router` | Angular |
 | `@remix-run/*`, `react-router` with `routes.ts` | Remix / React Router framework mode |
 
-Find the route table (or route folder) and the element rendered for an unknown route — the
+Find the route table (or route folder) and the element rendered for an unknown route. The
 mock's gate renders that same element when the flag is off.
 
 ## 2. Design system and tokens
@@ -38,14 +38,14 @@ mock's gate renders that same element when the flag is off.
 Search for `flag`, `feature`, `toggle`, `unleash`, `launchdarkly`, `growthbook`,
 `flagsmith`, `posthog` `isFeatureEnabled`. Note how a flag is declared, how code reads it, its
 default, and whether reading is asynchronous (needs a "ready" check). No hit means no flag
-mechanism — see `gates.md` → "No flag mechanism".
+mechanism; see the "No flag mechanism" section of `gates.md`.
 
 ## 4. Data layer
 
 - API client: a generated OpenAPI client (`openapi-ts`, `orval`, `openapi-generator`), GraphQL
   (`@apollo/client`, `urql`, codegen), tRPC, or hand-written `fetch` wrappers.
 - Fetching and caching: TanStack Query, SWR, RTK Query, Apollo, Pinia stores, Angular services.
-- Existing types for the entity the mock shows — type `mockData` with them.
+- Existing types for the entity the mock shows. Type `mockData` with them.
 
 ## 5. i18n
 

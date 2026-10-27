@@ -1,9 +1,9 @@
 # <Feature> mock
 
 Status: draft
-<!-- After sign-off, and only when the user says so: approved — <who>, <YYYY-MM-DD> -->
+<!-- After sign-off, and only when the user says so: approved by <who> on <YYYY-MM-DD> -->
 
-Flag: `<flag-name>` — <where it is declared and how code reads it>
+Flag: `<flag-name>`, <where it is declared and how code reads it>
 Switch it on locally: <env var, override file, flag-service environment>
 
 ## Stack
@@ -18,11 +18,11 @@ Switch it on locally: <env var, override file, flag-service environment>
 
 ## Screens and flow
 
-Source: <design file, screenshot or sketch link — or "request text only">
-Deviations from the source: <what differs and why — or "none">
+Source: <design file, screenshot or sketch link, or "request text only">
+Deviations from the source: <what differs and why, or "none">
 
-- `/invoices` — list of invoices with status filter
-- `/invoices/:id` — invoice detail with status change and delete
+- `/invoices`: list of invoices with status filter
+- `/invoices/:id`: invoice detail with status change and delete
 - Flow: List → Detail → back to List; List → "New invoice" modal → List
 
 ## Review links
@@ -37,7 +37,7 @@ needs a click (a modal, a confirmation).
 | List   | empty       | admin  | http://localhost:5173/invoices?scenario=empty       |
 | List   | error       | admin  | http://localhost:5173/invoices?scenario=error       |
 | List   | loading     | admin  | http://localhost:5173/invoices?scenario=loading     |
-| List   | write fails | admin  | http://localhost:5173/invoices?scenario=write-error — click "New invoice", submit |
+| List   | write fails | admin  | http://localhost:5173/invoices?scenario=write-error, then click "New invoice" and submit |
 
 ## Review
 
@@ -50,23 +50,23 @@ How reviewers reach the mock: <preview deployment / flag targeting / walkthrough
 
 ## Touchpoints
 
-- `src/flags.ts` — flag constant, default off
-- `src/routes.tsx` — `/invoices`, `/invoices/:id`
-- `app/invoices/` — with a file-based router: every route file under it, each only importing
+- `src/flags.ts`: flag constant, default off
+- `src/routes.tsx`: `/invoices`, `/invoices/:id`
+- `app/invoices/`: with a file-based router, every route file under it, each only importing
   from the feature folder
 
 ## Local stand-ins
 
-- `components/InvoiceStatusBadge` — shared `StatusBadge` has no "overdue" tone
+- `components/InvoiceStatusBadge`: shared `StatusBadge` has no "overdue" tone
 
 ## Data the screens assume
 
-- Invoice: number, customer, total, status, due date — no API type exists yet
+- Invoice: number, customer, total, status, due date. No API type exists yet.
 - Writes: create invoice, change status, delete invoice
 
 ## Decisions
 
-- <date> — Removed the bulk-delete button after review (<who>).
+- <date>: Removed the bulk-delete button after review (<who>).
 
 ## Open questions
 

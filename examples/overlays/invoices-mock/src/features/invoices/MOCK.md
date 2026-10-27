@@ -1,7 +1,7 @@
 # Invoices mock
 
-Status: approved — Ana Popescu, 2026-10-27
-<!-- After sign-off, and only when the user says so: approved — <who>, <YYYY-MM-DD> -->
+Status: approved by Ana Popescu on 2026-10-27
+<!-- After sign-off, and only when the user says so: approved by <who> on <YYYY-MM-DD> -->
 
 Flag: `invoices-beta` — declared in `FLAGS` in `src/flags.ts` with default `false`; read with
 `useFlag('invoices-beta')` in `InvoicesGate` and in the nav link.
