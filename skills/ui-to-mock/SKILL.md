@@ -4,7 +4,7 @@ description: Build a clickable UI mock of a screen or flow inside the real app �
 license: MIT
 metadata:
   author: marcellefter
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # UI to mock
@@ -52,7 +52,8 @@ Turn the request into a list before building anything:
 - **Access** — whether different roles see different screens or actions. "Everyone sees
   everything" is a valid answer; write it down.
 - **Source** — a design file, screenshot or sketch, if the user gave one. Match its layout and
-  content using the project's components; record anywhere you deviated and why.
+  content using the project's components; record the source and anywhere you deviated, and
+  why, under _Screens and flow_.
 
 When the request leaves screens, flow or access open, ask before building. When it is
 explicit, state the list and carry on. Copy
@@ -132,9 +133,11 @@ and barrel files for `mock-to-ui`.
 
 The mock leaves these to `mock-to-ui`, so they stay out of the mock even when they feel quick:
 test files, translation keys, API clients and data fetching, API error handling, real
-permission checks, and any edit to shared code. Running lint, type-check or tests while
-iterating is likewise out — but the project's normal quality gates apply unchanged when the
-user asks to commit, because a merged mock is still merged code.
+permission checks, and any edit to shared code. This deliberately overrides a project rule
+that every change carries tests or translations — the mock is thrown away or rebuilt by
+`mock-to-ui` — so say so in the report when the project has such a rule. Running lint,
+type-check or tests while iterating is likewise out — but the project's normal quality gates
+apply unchanged when the user asks to commit, because a merged mock is still merged code.
 
 ## 4. Review and sign-off
 
@@ -177,8 +180,9 @@ link, decision and open question goes in as soon as it exists. The template show
   ```
 
 - The **token check** passes — no literal colour, size or raw palette class in the feature
-  folder outside `mockData` and Markdown. A line that is not styling (an invoice number such
-  as `#1042`, an in-page anchor) is excused by a `mockship-allow` comment on that line:
+  folder outside `mockData` and Markdown. Copy such as "Invoice #1042" passes; a value that
+  only looks like a colour (an in-page anchor such as `"#add"`) is excused by a
+  `mockship-allow` comment on that line:
 
   ```bash
   bash <this-skill>/scripts/check-tokens.sh <path-to-feature-folder>

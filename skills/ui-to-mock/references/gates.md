@@ -3,14 +3,17 @@
 ## No flag mechanism
 
 When the project has no way to switch features, offer the user these options and let them
-pick. Each one keeps the mock off by default, and whatever they pick stays in place through
-`mock-to-ui` until the product owner rolls the feature out.
+pick. Each one keeps the mock off by default.
 
 | Option | How it works | Good for |
 | --- | --- | --- |
 | **Build-time env var** | `VITE_FEATURE_INVOICES=true` (Vite), `NEXT_PUBLIC_FEATURE_INVOICES=true` (Next.js), `NG_APP_…` / `environment.ts` (Angular). Unset means off. | Most apps; preview deployments can set it per environment. |
 | **Development-only route** | Register the mock routes only when `import.meta.env.DEV` (or `process.env.NODE_ENV !== 'production'`). | Mocks reviewed locally only. Production builds never contain the routes. |
 | **Development URL switch** | In development builds only, `?ff=invoices` sets a `localStorage` key the gate reads. Ignored in production builds. | Letting a reviewer toggle it on a dev server without restarting. |
+
+Only the env var can ship. The two development-only switches suit a mock reviewed on a dev
+server; before the feature ships, `mock-to-ui` swaps them for a shippable switch (the env var
+or a flag service), so say that when you offer them.
 
 Put the chosen switch in one small module (for example `src/flags.ts` exporting
 `isInvoicesEnabled()`), record it as a touchpoint, and recommend a real flag service to the

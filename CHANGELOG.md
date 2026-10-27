@@ -2,6 +2,36 @@
 
 All notable changes to mockship. Versions follow [Semantic Versioning](https://semver.org).
 
+## 1.1.1 — 2026-10-27
+
+Fixes from a standards and spec review of 1.1.0, and from the first full eval run.
+
+### Skills
+
+- `check-boundary.sh` fails loudly (exit 2) outside a git repository, on an unknown base ref
+  and on any git error, instead of printing OK; only paths listed under _Touchpoints_ count;
+  non-ASCII paths match.
+- `check-tokens.sh` reports unreadable files as an error, and in code only flags a hex value
+  in a value position, so copy such as "Invoice #1042" passes without a marker.
+- `MOCK.md` template: _Review links_ gets a Role column and write-failure rows; _Screens and
+  flow_ records the design source and deviations.
+- `mock-to-ui` rebuilds `MOCK.md` with the _Review_ section, and swaps a development-only flag
+  switch for a shippable one before shipping.
+- `ui-to-mock` states that skipping tests and translations deliberately overrides a project
+  rule requiring them.
+
+### Repository
+
+- Eval fixture rebuilt to follow the 1.1 rules (write-error and in-flight states, honest width
+  literals) and split into layers: a finished mock plus a draft-status layer.
+- New eval case `keeps-draft-until-approver-named`; the build case checks flag-first order and
+  write states again.
+- Eval setup copies the sample app's dependencies in, since eval sandboxes have no network.
+- CI pins Claude Code, skills-ref and the skills CLI, installs both skills with
+  `npx skills add`, and sets up every eval case to check it typechecks and passes the skill's
+  checks.
+- README states exactly what the end-to-end run found.
+
 ## 1.1.0 — 2026-10-27
 
 ### ui-to-mock

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -eu
 root=$(cd "$(dirname "$0")/../../../.." && pwd)
-bash "$root/examples/scaffold.sh" - "$root/examples/overlays/invoices-mock-draft"
+bash "$root/examples/scaffold.sh" - "$root/examples/overlays/invoices-mock" "$root/examples/overlays/status-draft"

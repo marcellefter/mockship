@@ -1,0 +1,2 @@
+.page { max-width: 960px; } /* mockship-allow: same cap as CustomerListPage; the theme has no width token */
+.toolbar { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); }

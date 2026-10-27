@@ -1,4 +1,0 @@
-/* Same width cap as CustomerDetailPage, expressed in tokens. */
-.page { max-width: calc(var(--space-8) * 22.5); }
-.status { display: flex; align-items: flex-end; gap: var(--space-4); }
-.confirmText { margin: 0; color: var(--color-text-muted); }

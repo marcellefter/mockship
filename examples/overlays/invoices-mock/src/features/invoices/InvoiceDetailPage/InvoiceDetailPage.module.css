@@ -1,0 +1,4 @@
+.page { max-width: 720px; } /* mockship-allow: same cap as CustomerDetailPage; the theme has no width token */
+.status { display: flex; align-items: flex-end; gap: var(--space-4); }
+.confirmText { margin: 0; color: var(--color-text-muted); }
+.error { margin: 0; color: var(--color-danger-fg); }

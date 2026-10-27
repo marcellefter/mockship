@@ -138,9 +138,10 @@ mockship/
 │       └── evals/
 ├── examples/
 │   ├── sample-app/                   # React + Vite app the evals run against
-│   ├── overlays/                     # variants and in-progress states of the sample app
+│   ├── overlays/                     # layers on the sample app: no flags, a finished mock, draft status
 │   ├── scaffold.sh                   # sets up the sample app for an eval run
-│   └── test-scripts.sh               # tests for the check scripts
+│   ├── test-scripts.sh               # tests for the check scripts
+│   └── test-fixtures.sh              # sets up every eval case and checks it
 ├── assets/                           # README image and its source
 ├── .github/workflows/ci.yml
 ├── CHANGELOG.md
@@ -153,27 +154,50 @@ folder whose `SKILL.md` carries `name` and `description` frontmatter, with longe
 
 ## Testing
 
-CI validates the marketplace manifest and both skills against the spec, tests the check
-scripts, and builds and tests the sample app.
+CI validates the marketplace manifest and both skills against the spec, installs them with
+`npx skills add`, tests the check scripts, builds and tests the sample app, and sets up every
+eval case to prove it typechecks and that each mock in it passes the skill's own checks.
 
 The behaviour of the skills themselves is covered by eval cases that run a real agent against
 the sample app, with and without the skill. With Claude Code 2.1.269 or later, from a skill
 folder:
 
 ```bash
-claude plugin eval . --scaffold --allow-tools Write,Edit,Bash --runs 1
+npm ci --prefix examples/sample-app
+```
+
+```bash
+cd skills/ui-to-mock && claude plugin eval . --scaffold --allow-tools Write,Edit,Bash --runs 1
 ```
 
 These are real, billed model runs — each case scaffolds a fresh copy of the sample app and can
 take several minutes.
 
-Both skills have also been run end to end on the sample app by fresh agents that had only the
-skill to go on. `ui-to-mock` built a flag-gated Invoices mock (list, detail, create modal, a
-new purple status, viewer vs admin) with review links for every state, took one round of
-feedback and recorded the sign-off. `mock-to-ui` confirmed the sign-off, screenshotted all 13
-review states, stopped on three missing API operations with drafted contracts, and — once the
-backend added them — shipped the feature with 28 new tests and screenshots matching the
-approved mock.
+Latest results (2026-10-27, Claude Opus 5.5, one run per case; ★ = ran against the 1.1.0
+fixture):
+
+| Skill | Case | With skill | Without |
+| --- | --- | --- | --- |
+| ui-to-mock | builds-flagged-invoices-mock | 0.90 | 0.10 |
+| ui-to-mock | offers-options-when-no-flag-system ★ | 1.00 | 0.25 |
+| ui-to-mock | keeps-shared-badge-read-only ★ | 1.00 | 0.75 |
+| ui-to-mock | keeps-draft-until-approver-named | 1.00 | 1.00 |
+| mock-to-ui | stops-on-missing-api-operations ★ | 1.00 | 0.83 |
+| mock-to-ui | asks-for-sign-off-when-draft ★ | 1.00 | 1.00 |
+| mock-to-ui | extends-shared-badge-for-stand-in | 1.00 | 1.00 |
+
+The one miss with the skill is real: the build run added the flag after the first screens
+rather than before. Cases that score the same with and without the skill guard against
+regressions but don't yet show what the skill adds.
+
+Both skills have also been run end to end on the sample app (2026-10-27) by fresh agents that
+had only the skill to go on; the transcripts are not in this repository. `ui-to-mock` built a
+flag-gated Invoices mock (list, detail, create modal, a new purple status, viewer vs admin) with
+review links for every state, took one round of feedback and recorded the sign-off.
+`mock-to-ui` confirmed the sign-off, screenshotted all 13 review states, and stopped on two
+missing API operations (delete, the new status) and a missing typed not-found error, with a
+drafted contract for each. Once the backend added them, it shipped the feature with 28 new
+tests and screenshots matching the approved mock.
 
 ## Adapting
 

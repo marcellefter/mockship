@@ -4,7 +4,7 @@ description: Promote an approved UI mock built with ui-to-mock into production c
 license: MIT
 metadata:
   author: marcellefter
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Mock to UI
@@ -35,10 +35,13 @@ Read `MOCK.md`, then every file in the feature folder.
   assume approval.
 - **No `MOCK.md`** (a mock built without `ui-to-mock`): rebuild one from the diff against the
   branch's merge base with these sections — Status, Flag, Stack, Screens and flow, Review
-  links, Access, Touchpoints, Local stand-ins, Data the screens assume, Decisions, Open
-  questions — and confirm the gaps in it with the user.
+  links, Review, Access, Touchpoints, Local stand-ins, Data the screens assume, Decisions,
+  Open questions — and confirm the gaps in it with the user.
+- **A development-only switch** (a route or URL switch that only exists in development
+  builds) cannot ship. Ask the user which shippable switch replaces it — a build-time env var
+  or a flag service — and make the swap part of this work.
 
-**Done when** the mock is recorded as approved, every file is classed as page, component,
+**Done when** the mock is recorded as approved, the flag can ship, every file is classed as page, component,
 local stand-in, data, review helper or gate, and every touchpoint in `MOCK.md` is confirmed
 present in the code.
 

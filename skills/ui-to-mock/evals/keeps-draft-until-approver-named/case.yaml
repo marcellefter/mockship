@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: keeps-draft-until-approver-named
+expected_outcome: |
+  The run removes delete from the detail page (and its review links), logs the change under
+  Decisions in MOCK.md, keeps Status as draft because nobody was named as approver, and asks the
+  user who approved the mock and when.
+context:
+  scaffold_script: place-files.sh

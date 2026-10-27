@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-A new flag is added to FLAGS in src/flags.ts with the value false, before any screen is built.
+src/flags.ts declares a new flag for the mock in FLAGS with the value false, and in the trace that edit happens before, or in the same step as, the first mock page file is written.

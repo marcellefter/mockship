@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  CLAUDE_CODE_VERSION: 2.1.311
+  SKILLS_REF_COMMIT: f130f348f502d9804278a617f86929846896d2e9
+  SKILLS_CLI_VERSION: 1.7.4
+
 jobs:
   validate:
     name: Validate skills and marketplace
@@ -15,14 +20,31 @@ jobs:
         with:
           node-version: 22
       - name: Claude Code marketplace manifest
-        run: npx -y @anthropic-ai/claude-code plugin validate .
+        run: npx -y "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" plugin validate .
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Agent Skills spec (skills-ref)
         run: |
-          pip install "git+https://github.com/agentskills/agentskills#subdirectory=skills-ref"
+          pip install "git+https://github.com/agentskills/agentskills@${SKILLS_REF_COMMIT}#subdirectory=skills-ref"
           for skill in skills/*/; do skills-ref validate "$skill"; done
+
+  install:
+    name: Install with the skills CLI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: npx skills add
+        run: |
+          project=$(mktemp -d)
+          cd "$project"
+          npx -y "skills@${SKILLS_CLI_VERSION}" add "$GITHUB_WORKSPACE" --skill '*' -a claude-code -y --copy
+          for skill in ui-to-mock mock-to-ui; do test -f ".claude/skills/$skill/SKILL.md"; done
+          test -x .claude/skills/ui-to-mock/scripts/check-boundary.sh || test -f .claude/skills/ui-to-mock/scripts/check-boundary.sh
+          test -f .claude/skills/ui-to-mock/references/gates.md
 
   scripts:
     name: Check scripts
@@ -32,11 +54,8 @@ jobs:
       - run: bash examples/test-scripts.sh
 
   sample-app:
-    name: Sample app
+    name: Sample app and eval fixtures
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: examples/sample-app
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -44,6 +63,8 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: examples/sample-app/package-lock.json
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
+      - run: npm ci --prefix examples/sample-app
+      - run: npm run typecheck --prefix examples/sample-app
+      - run: npm test --prefix examples/sample-app
+      - name: Every eval case sets up a sound starting point
+        run: bash examples/test-fixtures.sh

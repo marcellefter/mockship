@@ -18,18 +18,26 @@ Switch it on locally: <env var, override file, flag-service environment>
 
 ## Screens and flow
 
+Source: <design file, screenshot or sketch link — or "request text only">
+Deviations from the source: <what differs and why — or "none">
+
 - `/invoices` — list of invoices with status filter
 - `/invoices/:id` — invoice detail with status change and delete
 - Flow: List → Detail → back to List; List → "New invoice" modal → List
 
 ## Review links
 
-| Screen | State     | Link                                   |
-| ------ | --------- | -------------------------------------- |
-| List   | populated | http://localhost:5173/invoices         |
-| List   | empty     | http://localhost:5173/invoices?scenario=empty   |
-| List   | error     | http://localhost:5173/invoices?scenario=error   |
-| List   | loading   | http://localhost:5173/invoices?scenario=loading |
+One row per screen, state and role. Write a short instruction after the link when a state
+needs a click (a modal, a confirmation).
+
+| Screen | State       | Role   | Link                                                |
+| ------ | ----------- | ------ | --------------------------------------------------- |
+| List   | populated   | admin  | http://localhost:5173/invoices                      |
+| List   | populated   | viewer | http://localhost:5173/invoices?role=viewer          |
+| List   | empty       | admin  | http://localhost:5173/invoices?scenario=empty       |
+| List   | error       | admin  | http://localhost:5173/invoices?scenario=error       |
+| List   | loading     | admin  | http://localhost:5173/invoices?scenario=loading     |
+| List   | write fails | admin  | http://localhost:5173/invoices?scenario=write-error — click "New invoice", submit |
 
 ## Review
 

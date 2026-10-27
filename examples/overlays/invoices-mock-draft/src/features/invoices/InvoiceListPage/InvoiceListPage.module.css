@@ -1,3 +1,0 @@
-/* Same width cap as CustomerListPage, expressed in tokens. */
-.page { max-width: calc(var(--space-8) * 30); }
-.toolbar { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); }
