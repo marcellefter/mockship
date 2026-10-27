@@ -15,13 +15,13 @@ jobs:
     name: Validate skills and marketplace
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - name: Claude Code marketplace manifest
         run: npx -y "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" plugin validate .
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Agent Skills spec (skills-ref)
@@ -33,8 +33,8 @@ jobs:
     name: Install with the skills CLI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - name: npx skills add
@@ -50,15 +50,15 @@ jobs:
     name: Check scripts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: bash examples/test-scripts.sh
 
   sample-app:
     name: Sample app and eval fixtures
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
