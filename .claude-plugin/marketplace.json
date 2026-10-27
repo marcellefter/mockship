@@ -1,0 +1,22 @@
+{
+  "name": "mockship",
+  "owner": {
+    "name": "Marcel Lefter"
+  },
+  "metadata": {
+    "description": "Mock it, approve it, ship it: agent skills for flag-gated clickable UI mocks and their promotion to production code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "mockship",
+      "description": "ui-to-mock builds a flag-gated, clickable UI mock inside the real app; mock-to-ui promotes the approved mock to production code",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/ui-to-mock",
+        "./skills/mock-to-ui"
+      ]
+    }
+  ]
+}
