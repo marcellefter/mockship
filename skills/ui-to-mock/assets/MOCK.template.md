@@ -52,6 +52,8 @@ How reviewers reach the mock: <preview deployment / flag targeting / walkthrough
 
 - `src/flags.ts` — flag constant, default off
 - `src/routes.tsx` — `/invoices`, `/invoices/:id`
+- `app/invoices/` — with a file-based router: every route file under it, each only importing
+  from the feature folder
 
 ## Local stand-ins
 
@@ -69,3 +71,7 @@ How reviewers reach the mock: <preview deployment / flag targeting / walkthrough
 ## Open questions
 
 - Who can void an invoice that is already paid?
+
+## Promotion
+
+<!-- Filled in by mock-to-ui; ui-to-mock leaves this empty. -->

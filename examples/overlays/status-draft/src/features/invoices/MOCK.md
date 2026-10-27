@@ -75,7 +75,7 @@ How reviewers reach the mock: a walkthrough — the user demos it locally to pro
 
 ## Local stand-ins
 
-- `InvoiceStatusBadge` — shared `StatusBadge` has no purple tone; "On hold" renders a local badge on `--color-accent-bg` (`#f3e8ff`, the requested colour) / `--color-accent-fg`. The other statuses use the shared `StatusBadge`. `mock-to-ui` should add an `accent` tone to `StatusBadge`.
+- `InvoiceStatusBadge` — shared `StatusBadge` has no purple tone; "On hold" renders a local badge on `--color-accent-bg` (`#f3e8ff`, the requested colour) / `--color-accent-fg`. The other statuses use the shared `StatusBadge`.
 - `SelectField` — the shared components have no select; mirrors `TextField` (label + control) and is used for the status filter, status change, customer and currency.
 - `mockStore.ts` — module-level in-memory store so creates, status changes and deletes survive navigation between the mock pages. Replaced by TanStack Query hooks in `mock-to-ui`.
 - Page width caps — `960px` / `720px` copied from the Customers pages with a `mockship-allow` marker; the theme has no layout-width token, so `mock-to-ui` should add one.
@@ -103,3 +103,7 @@ How reviewers reach the mock: a walkthrough — the user demos it locally to pro
 ## Open questions
 
 - Does "On hold" mean anything for due-date / overdue handling? (Not raised in review; the mock treats it as a plain status.)
+
+## Promotion
+
+<!-- Filled in by mock-to-ui; ui-to-mock leaves this empty. -->

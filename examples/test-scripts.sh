@@ -69,4 +69,40 @@ if [ "$(id -u)" != "0" ]; then
 fi
 expect 2 "tokens: a folder that does not exist" tokens "$feature/missing"
 
+# Common token idioms are not literals.
+printf '.a { color: hsl(var(--primary)); background: rgb(var(--surface) / 0.5); }\n' > "$feature/Badge.module.css"
+expect 0 "tokens: colour functions that wrap a token" tokens "$feature"
+printf '@media (max-width: 768px) {\n  .a { display: none; }\n}\n' > "$feature/Badge.module.css"
+expect 0 "tokens: a breakpoint in an @media query" tokens "$feature"
+printf '.a { border: 1px solid var(--color-border); margin: 0px; }\n' > "$feature/Badge.module.css"
+expect 0 "tokens: 0px and 1px hairlines" tokens "$feature"
+printf '.a { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }\n' > "$feature/Badge.module.css"
+expect 1 "tokens: a literal rgba() colour beside a hairline" tokens "$feature"
+printf '.a { font-size: 0.875rem; }\n' > "$feature/Badge.module.css"
+expect 1 "tokens: a literal font size" tokens "$feature"
+printf '# project idiom\nfont-size: 0\\.875rem\n' > "$feature/.mockship-allow"
+expect 0 "tokens: a pattern in .mockship-allow excuses the idiom" tokens "$feature"
+rm "$feature/.mockship-allow"
+expect 0 "tokens: --advisory reports but passes" tokens --advisory "$feature"
+printf '.a { color: var(--color-text); }\n' > "$feature/Badge.module.css"
+
+# File-based routers and several mocks at once.
+mkdir -p src/routes/invoices/[id]
+printf 'export { InvoiceListPage as default } from "../../features/invoices";\n' > src/routes/invoices/page.tsx
+printf 'export { InvoiceDetailPage as default } from "../../../features/invoices";\n' > "src/routes/invoices/[id]/page.tsx"
+expect 1 "boundary: route files not yet listed" boundary "$feature"
+awk -v add="- \`src/routes/invoices/\`" '{ print } /^## Touchpoints/ { print ""; print add }' "$feature/MOCK.md" > "$feature/MOCK.tmp" && mv "$feature/MOCK.tmp" "$feature/MOCK.md"
+expect 0 "boundary: a folder touchpoint covers every route file under it" boundary "$feature"
+mkdir -p src/features/quotes
+printf '# Quotes mock\n\n## Touchpoints\n\n- `src/pages/Layout.tsx`\n' > src/features/quotes/MOCK.md
+printf 'export const Quotes = () => null;\n' > src/features/quotes/index.tsx
+printf '// quotes link\n' >> src/pages/Layout.tsx
+expect 0 "boundary: another mock's folder and touchpoints are not failures" boundary "$feature"
+git add -A && git -c user.name=t -c user.email=t@example.com commit -qm "mocks"
+git checkout -q main && git merge -q --ff-only feature/work
+expect 2 "boundary: on the base branch without a start commit" boundary "$feature"
+expect 0 "boundary: on the base branch with the start commit" boundary "$feature" "$(git rev-list --max-parents=0 HEAD)"
+printf 'x\n' > src/stray.ts && git add -A && git -c user.name=t -c user.email=t@example.com commit -qm stray
+expect 1 "boundary: a committed stray file on the base branch is caught" boundary "$feature" "$(git rev-list --max-parents=0 HEAD)"
+
 if [ "$failures" -eq 0 ]; then echo "all script checks passed"; else echo "$failures check(s) failed"; exit 1; fi

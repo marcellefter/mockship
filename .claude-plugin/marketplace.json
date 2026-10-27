@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Mock it, approve it, ship it: agent skills for flag-gated clickable UI mocks and their promotion to production code",
-    "version": "1.1.2"
+    "version": "1.2.0"
   },
   "plugins": [
     {
@@ -17,7 +17,7 @@
         "./skills/ui-to-mock",
         "./skills/mock-to-ui"
       ],
-      "version": "1.1.2"
+      "version": "1.2.0"
     }
   ]
 }

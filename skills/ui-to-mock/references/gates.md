@@ -56,8 +56,10 @@ const { ready, enabled } = useFlag('invoices');
 
 ### SvelteKit
 
+The route files are touchpoints; the gate lives in the feature folder.
+
 ```svelte
-<!-- src/routes/invoices/+layout.svelte -->
+<!-- src/lib/features/invoices/InvoicesGate.svelte -->
 <script lang="ts">
   import { flags } from '$lib/flags';
   import NotFound from '$lib/NotFound.svelte';
@@ -69,6 +71,48 @@ const { ready, enabled } = useFlag('invoices');
 {:else}
   <NotFound />
 {/if}
+```
+
+```svelte
+<!-- src/routes/invoices/+layout.svelte — touchpoint: imports and renders, nothing else -->
+<script lang="ts">
+  import InvoicesGate from '$lib/features/invoices/InvoicesGate.svelte';
+  let { children } = $props();
+</script>
+
+<InvoicesGate>{@render children()}</InvoicesGate>
+```
+
+### Next.js (App Router)
+
+Gate on the server, so a disabled mock never ships its markup, and let `notFound()` render the
+app's own `not-found.tsx`. Pass `scenario` (and `role`) down from the page's `searchParams`
+rather than calling `useSearchParams` in client components, which would need a Suspense
+boundary.
+
+```tsx
+// src/features/invoices/InvoicesGate.tsx
+import { notFound } from 'next/navigation';
+import { isFlagOn } from '@/flags';
+
+export async function InvoicesGate({ children }: { children: React.ReactNode }) {
+  if (!(await isFlagOn('invoices'))) notFound();
+  return <>{children}</>;
+}
+```
+
+```tsx
+// app/invoices/page.tsx — touchpoint: imports and renders, nothing else
+import { InvoiceListPage, InvoicesGate } from '@/features/invoices';
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ scenario?: string }> }) {
+  const { scenario } = await searchParams;
+  return (
+    <InvoicesGate>
+      <InvoiceListPage scenario={scenario} />
+    </InvoicesGate>
+  );
+}
 ```
 
 ### Angular
@@ -92,7 +136,8 @@ const scenario = params.get('scenario') ?? 'populated';
 ```
 
 Vue: `useRoute().query.scenario`. SvelteKit: `page.url.searchParams.get('scenario')`.
-Angular: `inject(ActivatedRoute).snapshot.queryParamMap.get('scenario')`.
+Angular: `inject(ActivatedRoute).snapshot.queryParamMap.get('scenario')`. Next.js App Router:
+the page's `searchParams` prop, passed down as above.
 
 For `loading`, render the loading state indefinitely rather than on a timer, so reviewers can
 look at it.

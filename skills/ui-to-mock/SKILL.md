@@ -1,10 +1,10 @@
 ---
 name: ui-to-mock
-description: Build a clickable UI mock of a screen or flow inside the real app — behind a feature flag that defaults off, with fake in-memory data, switchable empty/error/loading states, plain-text copy and no tests — and take it through review to sign-off. Use when asked to mock, prototype or click-through a page or feature in an existing frontend codebase before the backend or sign-off exists, including from a design file or screenshot. Promoting an approved mock to production code is the mock-to-ui skill.
+description: Build a clickable UI mock of a screen or flow inside the real app — behind a feature flag that defaults off, with fake in-memory data, switchable empty/error/loading states, plain-text copy and no tests — and take it through review to sign-off. Use when asked to mock, prototype or click-through a page or feature in an existing frontend codebase before the backend or sign-off exists, including from a design file or screenshot, and to change, re-review or abandon such a mock (a feature folder whose MOCK.md says Status draft). Not for test doubles, mocking API calls or the network (MSW, jest.mock), or Storybook fixtures. Promoting an approved mock to production code is the mock-to-ui skill.
 license: MIT
 metadata:
   author: marcellefter
-  version: "1.1.2"
+  version: "1.2.0"
 ---
 
 # UI to mock
@@ -38,6 +38,13 @@ list:
 | The flag           | wherever the project declares feature flags                                   |
 | One route per page | the project's route table or router config                                    |
 | An entry point     | a menu item or a link on an existing screen — only when the user asks for one |
+
+**File-based routers** (Next.js `app/` or `pages/`, SvelteKit and Remix `routes/`, Nuxt
+`pages/`) need their route files where the router looks for them. Those files are touchpoints:
+keep each one thin — it imports the page and the gate from the feature folder and renders
+them, nothing else — and list the route folder in `MOCK.md` as one touchpoint ending in `/`
+(`src/routes/invoices/`). [references/gates.md](references/gates.md) shows the pattern for
+Next.js and SvelteKit.
 
 ## 1. Intake
 
@@ -75,7 +82,7 @@ Every mock ships dark, so the flag exists before the first screen does.
    the app's loading state until flags are resolved (if the flag client is asynchronous), then
    the page when the flag is on, otherwise the same not-found element the app renders for an
    unknown route. [references/gates.md](references/gates.md) has the gate in React, Vue,
-   Svelte and Angular.
+   Svelte, Angular and the Next.js App Router.
 4. Any entry point the user asked for renders only when the flag is on.
 
 The off default keeps the mock invisible everywhere, including in a deployed environment where
@@ -135,9 +142,11 @@ The mock leaves these to `mock-to-ui`, so they stay out of the mock even when th
 test files, translation keys, API clients and data fetching, API error handling, real
 permission checks, and any edit to shared code. This deliberately overrides a project rule
 that every change carries tests or translations — the mock is thrown away or rebuilt by
-`mock-to-ui` — so say so in the report when the project has such a rule. Running lint,
-type-check or tests while iterating is likewise out — but the project's normal quality gates
-apply unchanged when the user asks to commit, because a merged mock is still merged code.
+`mock-to-ui` — so say so in the report when the project has such a rule. Running lint or tests
+while iterating is likewise out. The project's **type-check is not**: a mock that does not
+compile breaks the dev server on some stacks and the team's CI once merged, so run it before
+reporting (see _Done when_). The project's other quality gates apply unchanged when the user
+asks to commit, because a merged mock is still merged code.
 
 ## 4. Review and sign-off
 
@@ -154,8 +163,23 @@ Fill _Review links_ with one URL per screen and state, so reviewers can open eac
 hunting. When feedback comes back, change the mock, log each change under _Decisions_, and
 move answered items out of _Open questions_.
 
-**Never mark a mock approved yourself.** Set _Status_ to `approved — <who>, <date>` only when
-the user tells you who signed it off.
+**Never mark a mock approved yourself.** Set _Status_ to `approved — <who>, <YYYY-MM-DD>` —
+exactly that form, with an em dash — only when the user names who signed it off. "Product
+approved it" without a name is not enough: keep _Status_ at `draft`, do any other work the
+user asked for, and end your reply with the question "Who approved the mock, and on what
+date?" so the approval can be recorded.
+
+## Changing, pausing or abandoning a mock
+
+- **A visible change after approval** — new copy, a moved button, a dropped action — puts
+  _Status_ back to `draft` and needs sign-off again. Log it under _Decisions_. A change nobody
+  can see (a renamed variable) keeps the approval.
+- **Several mocks at once** each get their own feature folder and `MOCK.md`. Two mocks may
+  share a touchpoint file (the flags module, the route table); both list it. The boundary check
+  reports another mock's files without failing.
+- **Abandoning a mock** means removing the feature folder and undoing every touchpoint listed
+  in `MOCK.md` — the flag, the routes, any entry point. Afterwards the diff against the base
+  branch shows nothing from the mock; confirm that with `git diff` before reporting.
 
 ## 5. Keep MOCK.md current
 
@@ -171,18 +195,22 @@ link, decision and open question goes in as soon as it exists. The template show
   Check the "on" path through the project's local override; if that needs a restart you
   cannot do, flip the default temporarily, then put it back to off and check the "off" path
   again.
+- The project's **type-check** passes (`tsc`, `vue-tsc`, `svelte-check`, `ng build` — whatever
+  the project runs). Fix errors in the mock; report any that were there before the mock.
 - The **boundary check** passes — only the feature folder and the touchpoints listed in
-  `MOCK.md` changed. It finds the base branch itself; pass it as a second argument if it
-  cannot:
+  `MOCK.md` changed. It finds the base branch itself; on the base branch, or when it cannot
+  find one, pass the commit the mock started from as a second argument:
 
   ```bash
   bash <this-skill>/scripts/check-boundary.sh <path-to-feature-folder>
   ```
 
 - The **token check** passes — no literal colour, size or raw palette class in the feature
-  folder outside `mockData` and Markdown. Copy such as "Invoice #1042" passes; a value that
-  only looks like a colour (an in-page anchor such as `"#add"`) is excused by a
-  `mockship-allow` comment on that line:
+  folder outside `mockData` and Markdown. Token idioms (`hsl(var(--primary))`), `@media`
+  breakpoints, 1px hairlines and copy such as "Invoice #1042" pass. Excuse a single line that
+  is not styling with a `mockship-allow` comment, and an idiom the whole project uses with a
+  pattern in a `.mockship-allow` file at the repository root (one regex per line). When stack
+  discovery found no token system at all, run it with `--advisory` and say so in the report:
 
   ```bash
   bash <this-skill>/scripts/check-tokens.sh <path-to-feature-folder>

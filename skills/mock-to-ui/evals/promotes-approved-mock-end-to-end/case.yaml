@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: promotes-approved-mock-end-to-end
+expected_outcome: |
+  The backend already has every operation the mock needs. The run completes the promotion:
+  real data through the API client, access through useCan, the shared badge extended, copy in
+  both locales, tests for the gate, access and states, mock files removed, flag and gate kept,
+  and type-check and tests passing.
+context:
+  scaffold_script: place-files.sh

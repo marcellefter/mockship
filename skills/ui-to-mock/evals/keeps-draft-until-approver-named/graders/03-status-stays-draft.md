@@ -1,7 +1,8 @@
 ---
-type: llm
-focus: trace
-weight: 1
+type: regex
+pattern: '^Status: draft'
+flags: m
+target:
+  source: file
+  path: src/features/invoices/MOCK.md
 ---
-
-MOCK.md still reads Status: draft at the end of the run.

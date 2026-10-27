@@ -95,8 +95,14 @@ The agent will:
 5. **Keep `MOCK.md` current** at the feature root: status, flag, stack, screens and flow, a
    review link per screen and state, access, touchpoints, local stand-ins, assumed data,
    decisions and open questions.
-6. **Check its own work** with two scripts — only the feature folder and the listed touchpoints
-   changed, and no literal colours, sizes or raw palette classes — and report the review links.
+6. **Check its own work** — the project's type-check, plus two scripts: only the feature folder
+   and the listed touchpoints changed, and no literal colours, sizes or raw palette classes
+   (token idioms such as `hsl(var(--x))`, breakpoints and hairlines pass) — and report the
+   review links.
+
+Changing an approved mock puts it back to draft; abandoning one undoes every touchpoint it
+listed; several mocks can be in flight at once. With a file-based router (Next.js, SvelteKit,
+Nuxt, Remix) the route files stay thin and import from the feature folder.
 
 ### 2. Review and sign off
 
@@ -117,6 +123,7 @@ shared components, restructure to your conventions, swap the in-memory data for 
 layer, move copy into i18n, write and run tests, then compare screenshots against the baseline
 and hand off.
 
+It keeps a _Promotion_ record in `MOCK.md`, so a later session resumes where this one stopped.
 When an API operation or permission is missing it **stops** and gives you a drafted contract
 for the API owner instead of hand-writing a request. `MOCK.md`, `mockData` and the review
 parameters are deleted; the flag and gate stay so rollout remains the product owner's call.
@@ -173,22 +180,26 @@ cd skills/ui-to-mock && claude plugin eval . --scaffold --allow-tools Write,Edit
 These are real, billed model runs — each case scaffolds a fresh copy of the sample app and can
 take several minutes.
 
-Latest results (2026-10-27, Claude Opus 5.5, one run per case; ★ = ran against the 1.1.0
-fixture):
+Latest results (2026-10-27, Claude Opus 5.5, one run per case; ★ = last run on 1.1.x):
 
 | Skill | Case | With skill | Without |
 | --- | --- | --- | --- |
-| ui-to-mock | builds-flagged-invoices-mock | 0.90 | 0.10 |
+| ui-to-mock | builds-flagged-invoices-mock | 1.00 | 0.27 |
+| ui-to-mock | keeps-draft-until-approver-named | 1.00 | 0.50 |
 | ui-to-mock | offers-options-when-no-flag-system ★ | 1.00 | 0.25 |
 | ui-to-mock | keeps-shared-badge-read-only ★ | 1.00 | 0.75 |
-| ui-to-mock | keeps-draft-until-approver-named | 1.00 | 1.00 |
+| ui-to-mock | ignores-test-double-requests | 1.00 | 1.00 |
+| mock-to-ui | asks-for-sign-off-when-draft | 1.00 | 0.33 |
 | mock-to-ui | stops-on-missing-api-operations ★ | 1.00 | 0.83 |
-| mock-to-ui | asks-for-sign-off-when-draft ★ | 1.00 | 1.00 |
+| mock-to-ui | promotes-approved-mock-end-to-end | 1.00 | not run |
 | mock-to-ui | extends-shared-badge-for-stand-in | 1.00 | 1.00 |
+| mock-to-ui | edits-draft-mock-without-promoting | 1.00 | 1.00 |
 
-The one miss with the skill is real: the build run added the flag after the first screens
-rather than before. Cases that score the same with and without the skill guard against
-regressions but don't yet show what the skill adds.
+`ignores-test-double-requests` and `edits-draft-mock-without-promoting` are trigger guards:
+they check that the skill stays out of the way, so a tie with the baseline is the expected
+result. `extends-shared-badge-for-stand-in` still ties and guards against regressions. Graders
+read the files a run leaves behind wherever they can, because a judge model only sees the first
+and last twelve messages of a long run.
 
 Both skills have also been run end to end on the sample app (2026-10-27) by fresh agents that
 had only the skill to go on; the transcripts are not in this repository. `ui-to-mock` built a

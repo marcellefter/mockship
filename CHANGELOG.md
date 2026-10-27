@@ -2,6 +2,40 @@
 
 All notable changes to mockship. Versions follow [Semantic Versioning](https://semver.org).
 
+## 1.2.0 — 2026-10-27
+
+From an independent review aimed at real-world codebases.
+
+### Skills
+
+- **Token check fits real codebases**: colour functions wrapping a token (`hsl(var(--x))`),
+  `@media`/`@container`/`@supports` lines and 0px/1px hairlines no longer count; a
+  `.mockship-allow` file holds project-wide idioms; `--advisory` reports without failing for
+  projects with no token system.
+- **File-based routers**: route files are thin touchpoints that import from the feature folder,
+  and a touchpoint ending in `/` covers a whole route folder. New Next.js App Router gate; the
+  SvelteKit gate moves into the feature folder.
+- **Lifecycle**: a visible change after approval puts the mock back to draft; abandoning a mock
+  undoes every touchpoint; several mocks can be in flight, and the boundary check reports
+  another mock's files instead of failing them. `mock-to-ui` keeps a _Promotion_ record in
+  `MOCK.md` and resumes from it.
+- **Triggering**: `ui-to-mock` is not for test doubles, API/network mocking or Storybook
+  fixtures; changes to a draft mock belong to `ui-to-mock`, and `mock-to-ui` treats them as
+  mock work, not promotion.
+- **Boundary check on the base branch** refuses to run without the commit the mock started
+  from, instead of passing because committed files look like history.
+- **Type-check before reporting**: a mock must compile; `mock-to-ui` finishes with type-check
+  and tests passing.
+- Approval needs a named approver and a date (`approved — <who>, <YYYY-MM-DD>`).
+
+### Evals
+
+- Tempting prompts for the cases that scored the same with and without the skill ("it's
+  approved, go ahead" with no approver), and the fixture no longer hints the answer.
+- New cases: a test-double request that must not fire `ui-to-mock`, a copy edit to a draft
+  mock that must not start a promotion, and a full promotion on a backend-complete fixture.
+- File-content, tool-use and file-existence graders where a judge model is not needed.
+
 ## 1.1.2 — 2026-10-27
 
 - `check-tokens.sh`: on Linux (GNU grep) the stylesheet scan also read code files, so copy such

@@ -1,10 +1,10 @@
 ---
 name: mock-to-ui
-description: Promote an approved UI mock built with ui-to-mock into production code — real API data, access checks, translations, tests, shared components and the project's conventions — and prove it still looks and flows like the approved mock. Use when a mock has been signed off and must ship, or when a feature folder contains a MOCK.md.
+description: Promote an approved UI mock built with ui-to-mock into production code — real API data, access checks, translations, tests, shared components and the project's conventions — and prove it still looks and flows like the approved mock. Use when a mock has been signed off and must ship, or to resume a promotion recorded in a MOCK.md. Not for changing a mock that is still in review (Status draft) — that is ui-to-mock.
 license: MIT
 metadata:
   author: marcellefter
-  version: "1.1.2"
+  version: "1.2.0"
 ---
 
 # Mock to UI
@@ -26,17 +26,31 @@ Each step defers to the project's own conventions for its subject: `AGENTS.md`, 
 testing, design review). _Stack_ in `MOCK.md` names the libraries; this skill sets the order
 and the finish line for each step.
 
+## Keep a record
+
+Promotion stops for decisions and can span sessions, so keep _Promotion_ in `MOCK.md` current:
+one line per step — `done`, `waiting: <what>` or `skipped: <why>` — plus where the baseline
+screenshots are and every gap you drafted with its status. **Resuming**, read it first and
+carry on from the first step that is not done; never redo a finished step from memory. If the
+baseline folder is gone, say so — step 10 then becomes a walkthrough against the mock's review
+links, as long as the mock is still in git history.
+
 ## 1. Inventory and sign-off
 
 Read `MOCK.md`, then every file in the feature folder.
 
-- **Sign-off.** _Status_ must read `approved — <who>, <date>`. If it still reads `draft`, ask
-  the user who approved the mock and when, and record it, before changing any code. Never
-  assume approval.
+- **Not a promotion?** When the user asks for a change to the mock itself — copy, a moved
+  button, a new state — that is mock work, not promotion: make it the way `ui-to-mock` does,
+  in the feature folder with literals and fixtures. A visible change to an approved mock puts
+  _Status_ back to `draft`, which needs sign-off again before promotion continues.
+
+- **Sign-off.** _Status_ must read `approved — <who>, <YYYY-MM-DD>`. If it still reads
+  `draft`, ask the user who approved the mock and when, and record it, before changing any
+  code. "It's approved" without a name is not enough. Never assume approval.
 - **No `MOCK.md`** (a mock built without `ui-to-mock`): rebuild one from the diff against the
   branch's merge base with these sections — Status, Flag, Stack, Screens and flow, Review
   links, Review, Access, Touchpoints, Local stand-ins, Data the screens assume, Decisions,
-  Open questions — and confirm the gaps in it with the user.
+  Open questions, Promotion — and confirm the gaps in it with the user.
 - **A development-only switch** (a route or URL switch that only exists in development
   builds) cannot ship. Ask the user which shippable switch replaces it — a build-time env var
   or a flag service — and make the swap part of this work.
@@ -146,6 +160,7 @@ files you wrote.
    request description, along with who approved the mock. At commit time the project's quality
    gates apply (lint, type-check, tests, PR checklist).
 
-**Done when** `MOCK.md`, the `mockData` module and both review parameters are gone, the flag
+**Done when** the project's type-check and tests pass, `MOCK.md`, the `mockData` module and both
+review parameters are gone, the flag
 and gate are still in place, every screenshot pair matches or has a recorded decision, and the
 report names any gap from steps 3–4 and any visible change the user approved.
