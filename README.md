@@ -1,5 +1,7 @@
 # mockship
 
+![mockship — ui-to-mock builds a flag-gated clickable mock in your real app; after the team approves it, mock-to-ui ships it as production code with the same look and flow](assets/hero.png)
+
 **Mock it, approve it, ship it.** Two [Agent Skills](https://agentskills.io) that split UI work
 into a fast, throwaway-feeling mock that lives in your real app, and a disciplined promotion of
 that mock into production code once it is approved.
@@ -110,6 +112,9 @@ remains the product owner's call.
 mockship/
 ├── .claude-plugin/
 │   └── marketplace.json      # Claude Code marketplace + plugin definition
+├── assets/
+│   ├── hero.png              # README image
+│   └── hero.html             # its source (render with headless Chrome)
 ├── skills/
 │   ├── ui-to-mock/
 │   │   ├── SKILL.md

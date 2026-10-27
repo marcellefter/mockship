@@ -1,0 +1,240 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>mockship hero</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --panel: #121829;
+    --line: #232c45;
+    --text: #e8ecf6;
+    --muted: #8f9ab5;
+    --mock: #a78bfa;
+    --mock-soft: rgba(167, 139, 250, .14);
+    --ship: #34d399;
+    --ship-soft: rgba(52, 211, 153, .14);
+    --amber: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 640px; background: var(--bg); }
+  body {
+    font-family: Inter, system-ui, sans-serif;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+  }
+  .bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(520px 360px at 18% 70%, rgba(167,139,250,.20), transparent 70%),
+      radial-gradient(520px 360px at 84% 70%, rgba(52,211,153,.17), transparent 70%),
+      linear-gradient(var(--bg), var(--bg));
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(900px 520px at 50% 50%, #000 40%, transparent 100%);
+  }
+  .wrap { position: relative; padding: 44px 56px 0; height: 100%; }
+
+  /* header */
+  header { display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .logo {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--mock), var(--ship));
+    display: grid; place-items: center;
+    box-shadow: 0 8px 30px rgba(120, 160, 230, .25);
+  }
+  .wordmark { font-size: 40px; font-weight: 800; letter-spacing: -1.2px; }
+  .wordmark span { color: var(--muted); font-weight: 500; }
+  .tagline { font-size: 21px; font-weight: 600; color: var(--muted); margin-top: 2px; letter-spacing: -.2px; }
+  .tagline b:nth-child(1) { color: var(--mock); }
+  .tagline b:nth-child(2) { color: var(--amber); }
+  .tagline b:nth-child(3) { color: var(--ship); }
+  .chips { display: flex; gap: 8px; }
+  .chip {
+    font-size: 14px; font-weight: 600; color: var(--muted);
+    border: 1px solid var(--line); background: rgba(18,24,41,.7);
+    padding: 7px 12px; border-radius: 999px;
+  }
+
+  /* flow */
+  .flow {
+    margin-top: 66px;
+    display: grid; grid-template-columns: 1fr 150px 1fr; align-items: stretch;
+  }
+  .card {
+    background: rgba(18,24,41,.88);
+    border: 1px solid var(--line);
+    border-radius: 20px; padding: 20px 22px 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  }
+  .card.mock { border-color: rgba(167,139,250,.45); }
+  .card.ship { border-color: rgba(52,211,153,.45); }
+  .card-head { display: flex; align-items: baseline; justify-content: space-between; }
+  .skill { font-family: "JetBrains Mono", monospace; font-size: 22px; font-weight: 600; }
+  .mock .skill { color: var(--mock); }
+  .ship .skill { color: var(--ship); }
+  .step { font-size: 13px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+  .body { display: grid; grid-template-columns: 224px 1fr; gap: 18px; margin-top: 14px; align-items: start; }
+
+  /* mini app window */
+  .win { border-radius: 10px; overflow: hidden; background: #0d1222; position: relative; height: 200px; }
+  .mock .win { border: 1.5px dashed rgba(167,139,250,.65); }
+  .ship .win { border: 1.5px solid rgba(52,211,153,.55); }
+  .bar { height: 22px; display: flex; align-items: center; gap: 5px; padding: 0 9px; background: #161d33; }
+  .bar i { width: 7px; height: 7px; border-radius: 50%; background: #2c3656; display: block; }
+  .bar .url { margin-left: 8px; font: 500 10px "JetBrains Mono", monospace; color: var(--muted); }
+  .badge {
+    position: absolute; top: 30px; right: 8px;
+    font: 700 10px Inter; letter-spacing: 1px; padding: 3px 7px; border-radius: 6px;
+  }
+  .mock .badge { background: var(--mock-soft); color: var(--mock); }
+  .ship .badge { background: var(--ship-soft); color: var(--ship); }
+  .content { padding: 10px 10px 0; }
+  .ttl { height: 9px; width: 90px; border-radius: 4px; background: #2f3a5c; margin-bottom: 10px; }
+  .row { display: flex; align-items: center; gap: 7px; padding: 6px 0; border-top: 1px solid #1b2340; }
+  .row .a { height: 7px; border-radius: 4px; background: #2a3453; width: 70px; }
+  .row .b { height: 7px; border-radius: 4px; background: #222b47; width: 46px; }
+  .row .pill { margin-left: auto; height: 12px; width: 38px; border-radius: 6px; }
+  .mock .row .pill { background: var(--mock-soft); }
+  .ship .row .pill { background: var(--ship-soft); }
+  .mock .row .a, .mock .row .b { background: repeating-linear-gradient(90deg, #2f3757 0 6px, transparent 6px 9px); }
+  .footer-strip {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 26px;
+    display: flex; align-items: center; gap: 6px; padding: 0 9px;
+    font: 600 10px "JetBrains Mono", monospace; border-top: 1px solid #1b2340; background: #10162a;
+  }
+  .toggle { width: 20px; height: 11px; border-radius: 6px; position: relative; background: #2c3656; }
+  .toggle::after { content: ""; position: absolute; top: 2px; left: 2px; width: 7px; height: 7px; border-radius: 50%; background: #8f9ab5; }
+  .footer-strip .off { color: var(--muted); }
+  .file { margin-left: auto; color: var(--amber); }
+  .ship .footer-strip { color: var(--ship); }
+
+  ul { list-style: none; display: grid; gap: 16px; }
+  li { font-size: 16.5px; font-weight: 500; line-height: 1.25; display: flex; gap: 10px; align-items: flex-start; }
+  li svg { flex: 0 0 18px; margin-top: 1px; }
+  li small { display: block; color: var(--muted); font-size: 13.5px; font-weight: 500; margin-top: 2px; }
+
+  /* approval */
+  .gate { align-self: center; display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
+  .gate .arrow { position: absolute; top: 50%; left: -10px; right: -10px; height: 2px; margin-top: -26px;
+    background: linear-gradient(90deg, var(--mock), var(--amber) 50%, var(--ship)); opacity: .8; }
+  .gate .arrow::after { content: ""; position: absolute; right: -2px; top: -5px; border: 6px solid transparent; border-left: 9px solid var(--ship); border-right: 0; }
+  .stamp {
+    position: relative; width: 84px; height: 84px; border-radius: 50%;
+    background: #1a1608; border: 2px solid var(--amber);
+    display: grid; place-items: center;
+    box-shadow: 0 0 0 6px rgba(251,191,36,.10), 0 0 40px rgba(251,191,36,.25);
+  }
+  .gate .label { font-size: 15px; font-weight: 700; color: var(--amber); }
+  .gate .sub { font-size: 12.5px; color: var(--muted); text-align: center; line-height: 1.3; margin-top: -6px; }
+
+  /* install */
+  .install {
+    position: absolute; left: 56px; right: 56px; bottom: 36px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cmd {
+    font: 500 16px "JetBrains Mono", monospace; color: var(--text);
+    background: rgba(18,24,41,.9); border: 1px solid var(--line);
+    padding: 11px 16px; border-radius: 12px;
+  }
+  .cmd .p { color: var(--ship); margin-right: 10px; }
+  .cmd .g { color: var(--muted); }
+  .note { font-size: 15px; color: var(--muted); font-weight: 500; }
+  .note b { color: var(--text); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="grid"></div>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0a0e1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17l3 3h12l3-3"/><path d="M12 3v11"/><path d="M12 3l6 9H12"/><path d="M5 14h14"/>
+        </svg>
+      </div>
+      <div>
+        <div class="wordmark">mockship <span>skills</span></div>
+        <div class="tagline"><b>Mock it.</b> <b>Approve it.</b> <b>Ship it.</b></div>
+      </div>
+    </div>
+    <div class="chips">
+      <div class="chip">Agent Skills</div>
+      <div class="chip">Claude Code</div>
+      <div class="chip">Any frontend stack</div>
+    </div>
+  </header>
+
+  <div class="flow">
+    <div class="card mock">
+      <div class="card-head"><div class="skill">ui-to-mock</div><div class="step">Step 1 · build</div></div>
+      <div class="body">
+        <div class="win">
+          <div class="bar"><i></i><i></i><i></i><span class="url">/invoices</span></div>
+          <div class="badge">MOCK</div>
+          <div class="content">
+            <div class="ttl"></div>
+            <div class="row"><div class="a"></div><div class="b"></div><div class="pill"></div></div>
+            <div class="row"><div class="a"></div><div class="b"></div><div class="pill"></div></div>
+            <div class="row"><div class="a"></div><div class="b"></div><div class="pill"></div></div>
+            <div class="row"><div class="a"></div><div class="b"></div><div class="pill"></div></div>
+          </div>
+          <div class="footer-strip"><div class="toggle"></div><span class="off">flag: off</span><span class="file">MOCK.md</span></div>
+        </div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg><span>Clickable in your app<small>real routes, shell &amp; theme</small></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg><span>Fake in-memory data<small>no API, no i18n, no tests</small></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg><span>Ships dark behind a flag<small>hand-off notes in MOCK.md</small></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="gate">
+      <div class="arrow"></div>
+      <div class="stamp">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+      </div>
+      <div class="label">Approved</div>
+      <div class="sub">team clicks<br>through it</div>
+    </div>
+
+    <div class="card ship">
+      <div class="card-head"><div class="skill">mock-to-ui</div><div class="step">Step 2 · ship</div></div>
+      <div class="body">
+        <div class="win">
+          <div class="bar"><i></i><i></i><i></i><span class="url">/invoices</span></div>
+          <div class="badge">PRODUCTION</div>
+          <div class="content">
+            <div class="ttl"></div>
+            <div class="row"><div class="a"></div><div class="b"></div><div class="pill"></div></div>
+            <div class="row"><div class="a"></div><div class="b"></div><div class="pill"></div></div>
+            <div class="row"><div class="a"></div><div class="b"></div><div class="pill"></div></div>
+            <div class="row"><div class="a"></div><div class="b"></div><div class="pill"></div></div>
+          </div>
+          <div class="footer-strip">✓ api &nbsp;✓ i18n &nbsp;✓ tests</div>
+        </div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg><span>Real API &amp; shared UI<small>stops on a missing endpoint</small></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg><span>i18n, states &amp; tests<small>loading, empty, error</small></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg><span>Same look, same flow<small>approved mock = the spec</small></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="install">
+    <div class="cmd"><span class="p">$</span>claude plugin marketplace add <span class="g">marcellefter/</span>mockship</div>
+    <div class="note">or <b>npx skills add marcellefter/mockship</b></div>
+  </div>
+</div>
+</body>
+</html>
