@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: extends-shared-badge-for-stand-in
+expected_outcome: |
+  The local InvoiceStatusBadge is replaced by an accent tone added to the shared StatusBadge (existing tones and callers unchanged, with its test extended); SelectField is resolved as genuinely new or shared; the page widths get a decision.
+context:
+  scaffold_script: place-files.sh

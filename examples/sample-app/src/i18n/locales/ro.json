@@ -1,0 +1,19 @@
+{
+  "nav.customers": "Clienți",
+  "nav.reports": "Rapoarte",
+  "customers.title": "Clienți",
+  "customers.subtitle": "Toți cei pe care îi facturați",
+  "customers.column.name": "Nume",
+  "customers.column.email": "Email",
+  "customers.column.status": "Stare",
+  "customers.status.active": "Activ",
+  "customers.status.inactive": "Inactiv",
+  "customers.empty": "Încă nu aveți clienți",
+  "customers.error": "Clienții nu au putut fi încărcați",
+  "customers.detail.since": "Client din {date}",
+  "customers.detail.edit": "Editează clientul",
+  "common.back": "Înapoi",
+  "common.retry": "Încearcă din nou",
+  "common.notFound": "Pagina nu a fost găsită",
+  "reports.title": "Rapoarte"
+}

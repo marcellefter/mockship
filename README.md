@@ -72,64 +72,108 @@ cp -r mockship/skills/ui-to-mock mockship/skills/mock-to-ui .claude/skills/
 
 ### 1. Build the mock
 
-Ask for it in plain words:
+Ask for it in plain words, or hand over a design file or screenshot:
 
 > Mock an Invoices list and an invoice detail page so product can click through it before the
 > backend exists.
 
 The agent will:
 
-1. **Add the flag first**, the same way your project declares other flags, defaulting to off.
-   If your project has no feature-flag mechanism it stops and asks where the flag should go.
-2. **Build the screens** in one feature folder: each page is a real route, tabs/modals/filters
+1. **Discover the stack and take intake** — framework, router, design system, flags, data
+   layer, i18n, tests, permissions; then the screens, the flow between them, the states each
+   one needs and who sees what. Anything left open is asked before building.
+2. **Add the flag first**, the same way your project declares other flags, defaulting to off.
+   If your project has no flag mechanism, it offers a build-time env var, a development-only
+   route or a development URL switch and lets you pick — it never invents one silently.
+3. **Build the screens** in one feature folder: each page is a real route, tabs/modals/filters
    and form submits work, and writes change in-memory data seeded from a `mockData` module.
    Styling comes from your component library and theme tokens, and the layout matches the
    nearest similar page in the app.
-3. **Write `MOCK.md`** at the feature root: the flag, every touchpoint outside the folder, the
-   local stand-ins, the data the screens assume, and open questions.
-4. **Check its own boundary** (only the feature folder and the listed touchpoints changed, no
-   literal colours or pixel values) and report the route, the flag and how to turn it on
-   locally.
+4. **Make every state reviewable** — `?scenario=empty`, `?scenario=error`,
+   `?scenario=loading` (and `?role=viewer` when access differs), so reviewers sign off on those
+   too.
+5. **Keep `MOCK.md` current** at the feature root: status, flag, stack, screens and flow, a
+   review link per screen and state, access, touchpoints, local stand-ins, assumed data,
+   decisions and open questions.
+6. **Check its own work** with two scripts — only the feature folder and the listed touchpoints
+   changed, and no literal colours, sizes or raw palette classes — and report the review links.
 
-Turn the flag on in your development environment and click through it with your reviewers.
+### 2. Review and sign off
 
-### 2. Ship it
+The agent asks how reviewers will reach the mock (a preview deployment with the flag on, flag
+targeting for named accounts, or a walkthrough) and records it. Feedback goes into the mock and
+the _Decisions_ log. Only you can mark it approved:
 
-Once the mock is signed off:
+> Product signed off on the Invoices mock today — Ana Popescu.
+
+### 3. Ship it
 
 > The Invoices mock is approved — make it production-ready.
 
-The agent works through eight steps, each with a clear finish line: inventory the folder,
-map every read and write to a real API operation (stopping on gaps), resolve each stand-in
-against shared components, restructure to your conventions, swap the in-memory data for your
-data layer with loading/empty/error states, move copy into i18n, write and run tests, then
-review and hand off. `MOCK.md` and `mockData` are deleted; the flag and gate stay so rollout
-remains the product owner's call.
+The agent works through ten steps, each with a clear finish line: confirm sign-off and
+inventory the folder, screenshot every review link as a baseline, map every read and write to
+a real API operation, map _Access_ onto your permission checks, resolve each stand-in against
+shared components, restructure to your conventions, swap the in-memory data for your data
+layer, move copy into i18n, write and run tests, then compare screenshots against the baseline
+and hand off.
+
+When an API operation or permission is missing it **stops** and gives you a drafted contract
+for the API owner instead of hand-writing a request. `MOCK.md`, `mockData` and the review
+parameters are deleted; the flag and gate stay so rollout remains the product owner's call.
 
 ## Repository layout
 
 ```
 mockship/
-├── .claude-plugin/
-│   └── marketplace.json      # Claude Code marketplace + plugin definition
-├── assets/
-│   ├── hero.png              # README image
-│   └── hero.html             # its source (render with headless Chrome)
+├── .claude-plugin/marketplace.json   # Claude Code marketplace + plugin definition
 ├── skills/
 │   ├── ui-to-mock/
 │   │   ├── SKILL.md
-│   │   └── evaluations.json  # example prompts and expected behaviour
+│   │   ├── assets/MOCK.template.md
+│   │   ├── references/               # stack discovery, flag options and gates per framework
+│   │   ├── scripts/                  # check-boundary.sh, check-tokens.sh
+│   │   └── evals/                    # test cases (claude plugin eval format)
 │   └── mock-to-ui/
 │       ├── SKILL.md
-│       └── evaluations.json
-├── LICENSE
-└── README.md
+│       └── evals/
+├── examples/
+│   ├── sample-app/                   # React + Vite app the evals run against
+│   ├── overlays/                     # variants and in-progress states of the sample app
+│   ├── scaffold.sh                   # sets up the sample app for an eval run
+│   └── test-scripts.sh               # tests for the check scripts
+├── assets/                           # README image and its source
+├── .github/workflows/ci.yml
+├── CHANGELOG.md
+└── LICENSE
 ```
 
 Each skill follows the [Agent Skills specification](https://agentskills.io/specification): a
-folder whose `SKILL.md` carries `name` and `description` frontmatter followed by the
-instructions. `evaluations.json` lists test prompts with the behaviour a correct run shows —
-useful when you adapt the skills to your codebase.
+folder whose `SKILL.md` carries `name` and `description` frontmatter, with longer material in
+`references/`, `assets/` and `scripts/` that the agent loads only when needed.
+
+## Testing
+
+CI validates the marketplace manifest and both skills against the spec, tests the check
+scripts, and builds and tests the sample app.
+
+The behaviour of the skills themselves is covered by eval cases that run a real agent against
+the sample app, with and without the skill. With Claude Code 2.1.269 or later, from a skill
+folder:
+
+```bash
+claude plugin eval . --scaffold --allow-tools Write,Edit,Bash --runs 1
+```
+
+These are real, billed model runs — each case scaffolds a fresh copy of the sample app and can
+take several minutes.
+
+Both skills have also been run end to end on the sample app by fresh agents that had only the
+skill to go on. `ui-to-mock` built a flag-gated Invoices mock (list, detail, create modal, a
+new purple status, viewer vs admin) with review links for every state, took one round of
+feedback and recorded the sign-off. `mock-to-ui` confirmed the sign-off, screenshotted all 13
+review states, stopped on three missing API operations with drafted contracts, and — once the
+backend added them — shipped the feature with 28 new tests and screenshots matching the
+approved mock.
 
 ## Adapting
 

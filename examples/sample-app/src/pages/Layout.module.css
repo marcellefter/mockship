@@ -1,0 +1,6 @@
+.shell { display: grid; grid-template-columns: var(--nav-width) 1fr; min-height: 100vh; }
+.nav { background: var(--color-surface); border-right: 1px solid var(--color-border); padding: var(--space-6) var(--space-4); display: flex; flex-direction: column; gap: var(--space-1); }
+.brand { font-weight: 700; margin-bottom: var(--space-6); }
+.link { padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); color: var(--color-text); }
+.link:global(.active) { background: var(--color-neutral-bg); }
+.main { padding: var(--space-8); }

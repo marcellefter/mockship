@@ -1,0 +1,19 @@
+{
+  "nav.customers": "Customers",
+  "nav.reports": "Reports",
+  "customers.title": "Customers",
+  "customers.subtitle": "Everyone you bill",
+  "customers.column.name": "Name",
+  "customers.column.email": "Email",
+  "customers.column.status": "Status",
+  "customers.status.active": "Active",
+  "customers.status.inactive": "Inactive",
+  "customers.empty": "No customers yet",
+  "customers.error": "Customers could not be loaded",
+  "customers.detail.since": "Customer since {date}",
+  "customers.detail.edit": "Edit customer",
+  "common.back": "Back",
+  "common.retry": "Try again",
+  "common.notFound": "Page not found",
+  "reports.title": "Reports"
+}

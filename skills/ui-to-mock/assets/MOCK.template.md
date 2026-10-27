@@ -1,0 +1,63 @@
+# <Feature> mock
+
+Status: draft
+<!-- After sign-off, and only when the user says so: approved — <who>, <YYYY-MM-DD> -->
+
+Flag: `<flag-name>` — <where it is declared and how code reads it>
+Switch it on locally: <env var, override file, flag-service environment>
+
+## Stack
+
+- Framework / router: <e.g. React 19 + React Router 7>
+- Design system / tokens: <e.g. MUI theme, CSS variables in src/theme.css>
+- Flags: <mechanism>
+- Data layer: <e.g. generated OpenAPI client + TanStack Query in src/api>
+- i18n: <library and locales, or "none">
+- Tests: <runner + library, or "none">
+- Permissions: <how the app checks access, or "none">
+
+## Screens and flow
+
+- `/invoices` — list of invoices with status filter
+- `/invoices/:id` — invoice detail with status change and delete
+- Flow: List → Detail → back to List; List → "New invoice" modal → List
+
+## Review links
+
+| Screen | State     | Link                                   |
+| ------ | --------- | -------------------------------------- |
+| List   | populated | http://localhost:5173/invoices         |
+| List   | empty     | http://localhost:5173/invoices?scenario=empty   |
+| List   | error     | http://localhost:5173/invoices?scenario=error   |
+| List   | loading   | http://localhost:5173/invoices?scenario=loading |
+
+## Review
+
+How reviewers reach the mock: <preview deployment / flag targeting / walkthrough>
+
+## Access
+
+- Everyone who can see invoices sees the list and detail.
+- Only `billing-admin` can delete or change status. (`?role=viewer` previews the read-only view.)
+
+## Touchpoints
+
+- `src/flags.ts` — flag constant, default off
+- `src/routes.tsx` — `/invoices`, `/invoices/:id`
+
+## Local stand-ins
+
+- `components/InvoiceStatusBadge` — shared `StatusBadge` has no "overdue" tone
+
+## Data the screens assume
+
+- Invoice: number, customer, total, status, due date — no API type exists yet
+- Writes: create invoice, change status, delete invoice
+
+## Decisions
+
+- <date> — Removed the bulk-delete button after review (<who>).
+
+## Open questions
+
+- Who can void an invoice that is already paid?

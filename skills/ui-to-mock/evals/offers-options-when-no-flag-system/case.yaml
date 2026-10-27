@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: offers-options-when-no-flag-system
+expected_outcome: |
+  The project has no feature-flag mechanism. The run notices, does not invent one, offers the options from the skill's gates reference and waits for the user's choice before building screens.
+context:
+  scaffold_script: place-files.sh

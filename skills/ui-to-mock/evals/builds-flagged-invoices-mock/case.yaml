@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: builds-flagged-invoices-mock
+expected_outcome: |
+  A flag defaulting to off is added in src/flags.ts first; all mock code sits in one src/features/<feature>/ folder with a gate on every page, routes registered, in-memory data with working create and delete, scenario states, plain English copy, no tests, and a filled MOCK.md. Both check scripts pass.
+context:
+  scaffold_script: place-files.sh

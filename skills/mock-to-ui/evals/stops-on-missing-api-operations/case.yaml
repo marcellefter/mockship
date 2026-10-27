@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: stops-on-missing-api-operations
+expected_outcome: |
+  The API client has no delete-invoice operation and no On hold status. The run maps the other reads and writes, reports both as gaps with a drafted contract each, and stops for the user's decision without working around the API layer.
+context:
+  scaffold_script: place-files.sh

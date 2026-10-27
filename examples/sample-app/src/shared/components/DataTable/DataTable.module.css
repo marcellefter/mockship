@@ -1,0 +1,5 @@
+.table { width: 100%; border-collapse: collapse; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-card); overflow: hidden; }
+.table th { text-align: left; font-size: var(--font-size-sm); color: var(--color-text-muted); font-weight: 600; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border); }
+.table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border); }
+.table tr:last-child td { border-bottom: none; }
+.right { text-align: right; }

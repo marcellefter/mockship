@@ -1,10 +1,10 @@
 ---
 name: ui-to-mock
-description: Build a clickable UI mock of a screen or flow inside the real app — behind a feature flag that defaults off, with fake in-memory data, plain-text copy and no tests. Use when asked to mock, prototype or click-through a page or feature in an existing frontend codebase before the backend or sign-off exists. Promoting an approved mock to production code is the mock-to-ui skill.
+description: Build a clickable UI mock of a screen or flow inside the real app — behind a feature flag that defaults off, with fake in-memory data, switchable empty/error/loading states, plain-text copy and no tests — and take it through review to sign-off. Use when asked to mock, prototype or click-through a page or feature in an existing frontend codebase before the backend or sign-off exists, including from a design file or screenshot. Promoting an approved mock to production code is the mock-to-ui skill.
 license: MIT
 metadata:
   author: marcellefter
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # UI to mock
@@ -17,7 +17,9 @@ skill, which runs once the mock is approved.
 
 Before starting, read the project's own agent and contributor docs (`AGENTS.md`, `CLAUDE.md`,
 `CONTRIBUTING.md`, or similar). Where they set a convention — folder layout, naming, styling,
-flags — follow it; this skill only adds the rules that make a mock a mock.
+flags — follow it; this skill only adds the rules that make a mock a mock. Then work through
+[references/stack-discovery.md](references/stack-discovery.md) so you know the framework,
+router, design system, flag mechanism and data layer before writing a line.
 
 ## The boundary
 
@@ -31,34 +33,54 @@ the variant inside the mock folder and list it under _Local stand-ins_ in `MOCK.
 never edits a file outside its folder, except these **touchpoints**, which are the complete
 list:
 
-| Touchpoint         | Where                                                                      |
-| ------------------ | -------------------------------------------------------------------------- |
-| The flag           | wherever the project declares feature flags                                |
-| One route per page | the project's route table or router config                                 |
+| Touchpoint         | Where                                                                         |
+| ------------------ | ----------------------------------------------------------------------------- |
+| The flag           | wherever the project declares feature flags                                   |
+| One route per page | the project's route table or router config                                    |
 | An entry point     | a menu item or a link on an existing screen — only when the user asks for one |
 
-## 1. Flag first
+## 1. Intake
+
+Turn the request into a list before building anything:
+
+- **Screens** — every page, modal and drawer, each with a one-line purpose.
+- **Flow** — how a user moves between them (`List → Detail`, `List → New invoice modal → List`).
+- **Interactions** — filters, sorting, tabs, form submits, the writes each one performs.
+- **States** — for every screen with data: populated, empty, error and loading are the
+  default; add any the request names (permission denied, over limit). For every write: what
+  its control shows while the write is in flight, and what the user sees when it fails.
+- **Access** — whether different roles see different screens or actions. "Everyone sees
+  everything" is a valid answer; write it down.
+- **Source** — a design file, screenshot or sketch, if the user gave one. Match its layout and
+  content using the project's components; record anywhere you deviated and why.
+
+When the request leaves screens, flow or access open, ask before building. When it is
+explicit, state the list and carry on. Copy
+[assets/MOCK.template.md](assets/MOCK.template.md) to `MOCK.md` in the feature folder and fill
+in _Status_ (`draft`), _Stack_, _Screens and flow_ and _Access_ now.
+
+## 2. Flag first
 
 Every mock ships dark, so the flag exists before the first screen does.
 
-1. Find how the project already declares feature flags (a flags module, a feature-flag service
-   such as Unleash, LaunchDarkly, GrowthBook or Flagsmith, a config file). Add the new flag
-   exactly the way existing flags are added — same naming pattern, same helpers.
-   **Its default is always off.**
-2. If the project has no feature-flag mechanism, **stop and ask the user** where the flag
-   goes. A mock never invents a flag system on its own.
+1. **The project has a flag mechanism** (a flags module, a service such as Unleash,
+   LaunchDarkly, GrowthBook or Flagsmith, a config file): add the new flag exactly the way
+   existing flags are added — same naming pattern, same helpers. **Its default is always off.**
+2. **It has none:** do not invent one. Offer the user the options in
+   [references/gates.md](references/gates.md) → "No flag mechanism" (a build-time environment
+   variable, a development-only route, a development-only URL switch), let them pick, and
+   record the choice in `MOCK.md`. It counts as a touchpoint.
 3. Write one **gate** component in the mock folder and wrap **every** mock page in it: render
    the app's loading state until flags are resolved (if the flag client is asynchronous), then
    the page when the flag is on, otherwise the same not-found element the app renders for an
-   unknown route.
+   unknown route. [references/gates.md](references/gates.md) has the gate in React, Vue,
+   Svelte and Angular.
 4. Any entry point the user asked for renders only when the flag is on.
 
 The off default keeps the mock invisible everywhere, including in a deployed environment where
-the flag was never created in the flag service. Tell the user how to switch it on locally —
-the project's local override if it has one, otherwise the flag service's development
-environment.
+the flag was never created in the flag service.
 
-## 2. Build the screens
+## 3. Build the screens
 
 **Clickable, not static.** A reviewer must be able to walk the whole flow:
 
@@ -74,6 +96,16 @@ it, so `mock-to-ui` swaps the source without reshaping anything. Data never touc
 network: no API client calls, data-fetching library, `fetch`, or request mocking (MSW and the
 like).
 
+**States are reviewable.** Each screen reads a `scenario` URL parameter —
+`?scenario=empty`, `?scenario=error`, `?scenario=loading`, plus any extra state from intake —
+and renders that state from the fixtures; without the parameter it shows the populated state.
+`?scenario=write-error` makes every write fail, so reviewers see the failure feedback, and
+writes take a moment so the in-flight state (a disabled or busy control) is visible.
+Build every state with the design system's own empty, error and loading patterns, because
+reviewers approve these too and `mock-to-ui` reproduces them as approved. When intake found
+that roles differ, a `role` URL parameter switches which screens and actions show. Both
+parameters live only in the mock folder; `mock-to-ui` removes them.
+
 **Copy** is plain string literals in the markup, in the app's primary language — no i18n
 calls, no locale files. Casing and wording still follow the project's copy guidelines, if it
 has any.
@@ -81,9 +113,12 @@ has any.
 **Visual consistency** comes from two sources:
 
 - **The design system.** Use the project's component library first, then its theme tokens
-  (CSS variables, a theme object, Tailwind config, design tokens) for anything custom. Every
-  colour, size, radius and spacing is a token — never a literal. If the project has a design
-  skill or style guide, load it before the first screen.
+  (CSS variables, a theme object, Tailwind theme classes, design tokens) for anything custom.
+  Every colour, size, radius and spacing is a token — never a literal. When the theme has no
+  token for a value the neighbouring page hard-codes (a page max-width, say), copy the
+  neighbour's literal with a `mockship-allow` comment and list it under _Local stand-ins_ so
+  `mock-to-ui` turns it into a token; never disguise it as arithmetic on unrelated tokens. If
+  the project has a design skill or style guide, load it before the first screen.
 - **Match the neighbour.** Find the nearest real page in the same app with a similar shape
   (list, detail, settings, wizard) and reuse its page shell, header, toolbar and table
   components rather than composing new ones.
@@ -96,58 +131,59 @@ and barrel files for `mock-to-ui`.
 ## What mock-to-ui owns
 
 The mock leaves these to `mock-to-ui`, so they stay out of the mock even when they feel quick:
-test files, translation keys, API clients and data fetching, API error handling, permission
-checks, and any edit to shared code. Running lint, type-check or tests while iterating is
-likewise out — but the project's normal quality gates apply unchanged when the user asks to
-commit, because a merged mock is still merged code.
+test files, translation keys, API clients and data fetching, API error handling, real
+permission checks, and any edit to shared code. Running lint, type-check or tests while
+iterating is likewise out — but the project's normal quality gates apply unchanged when the
+user asks to commit, because a merged mock is still merged code.
 
-## 3. Write MOCK.md
+## 4. Review and sign-off
 
-`MOCK.md` at the feature root is the hand-off to `mock-to-ui`. Keep it current as you build:
+A mock is only useful once the people who approve it can click through it. Ask the user how
+reviewers will reach it, and record the answer under _Review_ in `MOCK.md`:
 
-```markdown
-# Invoices mock
+- **A preview or staging deployment** with the flag switched on in that environment only.
+- **Flag targeting** — on in production or staging for the named reviewers' accounts only,
+  when the flag service supports it.
+- **A walkthrough** — the user demos it locally, or you capture screenshots of every screen
+  and state from the _Review links_ when a browser tool is available.
 
-Flag: `feature-invoices` — declared in `src/flags.ts` (`INVOICES_FLAG`, `useHasInvoices`)
+Fill _Review links_ with one URL per screen and state, so reviewers can open each without
+hunting. When feedback comes back, change the mock, log each change under _Decisions_, and
+move answered items out of _Open questions_.
 
-## Touchpoints
+**Never mark a mock approved yourself.** Set _Status_ to `approved — <who>, <date>` only when
+the user tells you who signed it off.
 
-- `src/flags.ts` — flag constant, default off, hook
-- `src/routes.ts` — `/invoices`, `/invoices/:id`
+## 5. Keep MOCK.md current
 
-## Local stand-ins
-
-- `components/InvoiceStatusBadge` — shared `StatusBadge` has no "overdue" tone
-
-## Data the screens assume
-
-- Invoice: number, customer, total, status, due date — no API type exists yet
-- Writes: create invoice, change status, delete invoice
-
-## Open questions
-
-- Who can void an invoice that is already paid?
-```
+`MOCK.md` is the hand-off to `mock-to-ui`. Every touchpoint, stand-in, assumed field, review
+link, decision and open question goes in as soon as it exists. The template shows each section.
 
 ## Done when
 
-- Every requested screen is reachable by clicking from the first mock page with the flag on,
-  and every interaction above works against the in-memory data.
+- Every screen from intake is reachable by clicking from the first mock page with the flag on,
+  every interaction works against the in-memory data, and every state from intake renders from
+  its review link.
 - With the flag off, every mock route renders the not-found element and no entry point shows.
-- The **boundary check** lists only the mock folder plus the touchpoints in `MOCK.md`
-  (replace `main` with the branch the work is based on):
+  Check the "on" path through the project's local override; if that needs a restart you
+  cannot do, flip the default temporarily, then put it back to off and check the "off" path
+  again.
+- The **boundary check** passes — only the feature folder and the touchpoints listed in
+  `MOCK.md` changed. It finds the base branch itself; pass it as a second argument if it
+  cannot:
 
   ```bash
-  git diff --name-only "$(git merge-base origin/main HEAD)"
-  git ls-files --others --exclude-standard
+  bash <this-skill>/scripts/check-boundary.sh <path-to-feature-folder>
   ```
 
-- No literal colour or pixel value in the mock folder — this prints nothing (adjust the
-  pattern if the project's tokens are themselves written in px):
+- The **token check** passes — no literal colour, size or raw palette class in the feature
+  folder outside `mockData` and Markdown. A line that is not styling (an invoice number such
+  as `#1042`, an in-page anchor) is excused by a `mockship-allow` comment on that line:
 
   ```bash
-  grep -rnE "#[0-9a-fA-F]{3,8}\b|[0-9]+px|rgba?\(" <path-to-feature-folder>
+  bash <this-skill>/scripts/check-tokens.sh <path-to-feature-folder>
   ```
 
-Report the route URL, the flag name, how to switch it on locally, and the `MOCK.md` stand-ins
-and open questions. If you could not open the mock in a browser, say so.
+`<this-skill>` is the folder this `SKILL.md` is in. Report the route URL, the flag and how to
+switch it on locally, the review links, and the `MOCK.md` stand-ins and open questions. If you
+could not open the mock in a browser, say so.
