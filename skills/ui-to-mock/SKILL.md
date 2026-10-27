@@ -4,7 +4,7 @@ description: Build a clickable UI mock of a screen or flow inside the real app, 
 license: MIT
 metadata:
   author: marcellefter
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # UI to mock

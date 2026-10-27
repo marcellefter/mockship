@@ -34,6 +34,13 @@ tokens() { bash "$scripts/check-tokens.sh" "$@"; }
 expect 0 "boundary: feature folder plus a listed touchpoint" boundary "$feature"
 printf '// stray edit\n' >> src/routes.tsx
 expect 1 "boundary: a file mentioned in MOCK.md but not under Touchpoints" boundary "$feature"
+# Some agent sandboxes block temp files. A check that cannot write one must still fail, not pass
+# on an empty scan.
+nowrite=$(mktemp -d) && mkdir -p "$nowrite/bin" "$nowrite/tmp"
+printf '#!/bin/sh\nexit 1\n' > "$nowrite/bin/mktemp" && chmod +x "$nowrite/bin/mktemp" && chmod a-w "$nowrite/tmp"
+blocked() { env PATH="$nowrite/bin:$PATH" TMPDIR="$nowrite/tmp" bash "$@"; }
+expect 1 "boundary: still fails when temp files cannot be created" blocked "$scripts/check-boundary.sh" "$feature"
+expect 1 "scripts: no here-strings or temp files" grep -nE '<<<|mktemp' "$scripts/check-boundary.sh" "$scripts/check-tokens.sh"
 awk -v add="- \`src/routes.tsx\`" '{ print } /^- `src\/flags.ts`/ { print add }' "$feature/MOCK.md" > "$feature/MOCK.tmp"
 mv "$feature/MOCK.tmp" "$feature/MOCK.md"
 expect 0 "boundary: the same file once listed under Touchpoints" boundary "$feature"
@@ -49,6 +56,7 @@ rm -rf "$outside"
 expect 0 "tokens: clean feature folder" tokens "$feature"
 printf '.badge { color: #f3e8ff; }\n' > "$feature/Badge.module.css"
 expect 1 "tokens: a literal hex colour in a stylesheet" tokens "$feature"
+expect 1 "tokens: still fails when temp files cannot be created" blocked "$scripts/check-tokens.sh" "$feature"
 printf '.badge { color: var(--color-accent-fg); padding: 4px; }\n' > "$feature/Badge.module.css"
 expect 1 "tokens: a literal pixel size" tokens "$feature"
 printf '.badge { color: var(--color-accent-fg); }\n' > "$feature/Badge.module.css"
@@ -104,5 +112,7 @@ expect 2 "boundary: on the base branch without a start commit" boundary "$featur
 expect 0 "boundary: on the base branch with the start commit" boundary "$feature" "$(git rev-list --max-parents=0 HEAD)"
 printf 'x\n' > src/stray.ts && git add -A && git -c user.name=t -c user.email=t@example.com commit -qm stray
 expect 1 "boundary: a committed stray file on the base branch is caught" boundary "$feature" "$(git rev-list --max-parents=0 HEAD)"
+
+chmod -R u+w "$nowrite" && rm -rf "$nowrite"
 
 if [ "$failures" -eq 0 ]; then echo "all script checks passed"; else echo "$failures check(s) failed"; exit 1; fi

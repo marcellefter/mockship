@@ -11,6 +11,7 @@
 #             branch itself, where committed mock files cannot be told apart from history.
 # Exit codes: 0 OK, 1 files outside the boundary, 2 usage or git error.
 set -euo pipefail
+# No temp files or here-strings, so a sandbox that blocks them cannot make the check pass.
 
 die() { echo "error: $*" >&2; exit 2; }
 
@@ -56,7 +57,7 @@ covered_by() { # covered_by <file> <newline-separated touchpoints>
     [ -n "$point" ] || continue
     if [ "$file" = "$point" ]; then return 0; fi
     case "$point" in */) [[ "$file" == "$point"* ]] && return 0 ;; esac
-  done <<<"$2"
+  done < <(printf '%s\n' "$2")
   return 1
 }
 
@@ -73,7 +74,7 @@ while IFS= read -r file; do
       fi
       ;;
   esac
-done <<<"$all_files"
+done < <(printf '%s\n' "$all_files")
 
 inside=0
 listed=0
@@ -96,7 +97,7 @@ while IFS= read -r file; do
       unlisted+=("$file")
     fi
   fi
-done <<<"$all_files"
+done < <(printf '%s\n' "$all_files")
 
 echo "base: $base ($merge_base)"
 echo "inside $rel: $inside file(s); touchpoints listed in MOCK.md: $listed file(s)"

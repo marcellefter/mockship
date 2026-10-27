@@ -2,7 +2,14 @@
 
 All notable changes to mockship. Versions follow [Semantic Versioning](https://semver.org).
 
-## Unreleased
+## 1.3.1 - 2026-10-28
+
+### Scripts
+
+- `check-tokens.sh` and `check-boundary.sh` no longer use temp files or here-strings. In an
+  agent sandbox that blocks temp files, both used to read nothing and print OK: the token check
+  passed a folder full of literal colours, and the boundary check missed every changed file.
+  They now fail as they should. `test-scripts.sh` covers this with a blocked temp directory.
 
 ### Evals
 

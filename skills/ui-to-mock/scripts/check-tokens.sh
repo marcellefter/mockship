@@ -48,40 +48,44 @@ for allow_file in "$dir/.mockship-allow" ${top:+"$top/.mockship-allow"}; do
   done < "$allow_file"
 done
 
-candidates=$(mktemp)
-trap 'rm -f "$candidates"' EXIT
-
+# No temp files or here-strings: in a sandbox that blocks them, the scan would read nothing and
+# pass. Matches are kept in a variable and tested with [[ =~ ]] instead.
+candidates=""
 scan() { # scan <pattern> <grep file filters...>
-  local pattern=$1
+  local pattern=$1 out status=0
   shift
   # File filters go before the exclusions: GNU grep keeps a file that matches no filter
   # unless the first filter is an --include.
-  grep -rnE "$pattern" "$dir" "$@" "${skip[@]}" >>"$candidates"
-  [ $? -le 1 ] || die "could not read every file in $dir"
+  out=$(grep -rnE "$pattern" "$dir" "$@" "${skip[@]}") || status=$?
+  [ "$status" -le 1 ] || die "could not read every file in $dir"
+  if [ -n "$out" ]; then candidates+="$out"$'\n'; fi
 }
 scan "$style_pattern" "${styles[@]}"
 scan "$code_pattern" "${not_styles[@]}"
 
 found=()
+at_rule='^[[:space:]]*@(media|container|supports)'
 while IFS= read -r hit; do
+  [ -n "$hit" ] || continue
   file=${hit%%:*}
   rest=${hit#*:}
   content=${rest#*:}
   case "$content" in *mockship-allow*) continue ;; esac
-  grep -qE '^[[:space:]]*@(media|container|supports)' <<<"$content" && continue
+  [[ $content =~ $at_rule ]] && continue
   allowed=0
   for allow in ${allow_patterns[@]+"${allow_patterns[@]}"}; do
-    if grep -qE -- "$allow" <<<"$content"; then allowed=1; break; fi
+    if [[ $content =~ $allow ]]; then allowed=1; break; fi
   done
   [ "$allowed" = 1 ] && continue
-  stripped=$(sed -E -e 's/(rgba?|hsla?|oklch|oklab|lab|lch)\([[:space:]]*var\(/var(/g' \
-                    -e 's/(^|[^0-9.])[01]px/\1/g' <<<"$content")
+  stripped=$(printf '%s\n' "$content" |
+    sed -E -e 's/(rgba?|hsla?|oklch|oklab|lab|lch)\([[:space:]]*var\(/var(/g' \
+           -e 's/(^|[^0-9.])[01]px/\1/g')
   case "$file" in
     *.css | *.scss | *.sass | *.less | *.styl) pattern=$style_pattern ;;
     *) pattern=$code_pattern ;;
   esac
-  grep -qE "$pattern" <<<"$stripped" && found+=("$hit")
-done < "$candidates"
+  [[ $stripped =~ $pattern ]] && found+=("$hit")
+done < <(printf '%s' "$candidates")
 
 if [ ${#found[@]} -gt 0 ]; then
   if [ "$advisory" = 1 ]; then
