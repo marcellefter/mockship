@@ -30,7 +30,9 @@ trap 'rm -f "$hits"' EXIT
 scan() { # scan <pattern> <grep options...>
   local pattern=$1
   shift
-  grep -rnE "$pattern" "$dir" "${skip[@]}" "$@" >>"$hits"
+  # File filters go before the exclusions: GNU grep keeps a file that matches no filter
+  # unless the first filter is an --include.
+  grep -rnE "$pattern" "$dir" "$@" "${skip[@]}" >>"$hits"
   [ $? -le 1 ] || die "could not read every file in $dir"
 }
 scan "$hex_value|$size|$fn|$arbitrary" "${styles[@]}"

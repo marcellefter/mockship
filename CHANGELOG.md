@@ -2,6 +2,11 @@
 
 All notable changes to mockship. Versions follow [Semantic Versioning](https://semver.org).
 
+## 1.1.2 — 2026-10-27
+
+- `check-tokens.sh`: on Linux (GNU grep) the stylesheet scan also read code files, so copy such
+  as "Invoice #1042" failed there. File filters now come before the exclusions.
+
 ## 1.1.1 — 2026-10-27
 
 Fixes from a standards and spec review of 1.1.0, and from the first full eval run.

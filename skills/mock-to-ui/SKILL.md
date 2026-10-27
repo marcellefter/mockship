@@ -4,7 +4,7 @@ description: Promote an approved UI mock built with ui-to-mock into production c
 license: MIT
 metadata:
   author: marcellefter
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # Mock to UI
