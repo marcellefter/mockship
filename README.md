@@ -6,10 +6,8 @@ Two [Agent Skills](https://agentskills.io) for UI work in an existing app. The f
 quick mock inside the app so people can click through it and approve it. The second turns the
 approved mock into production code.
 
-| Skill | What it does |
-| --- | --- |
-| [`ui-to-mock`](skills/ui-to-mock/SKILL.md) | Builds a clickable mock of a screen or flow inside your existing app, using its real routes, layout and theme with fake in-memory data, behind a feature flag that defaults off. It writes no tests, translations or API calls, and leaves a `MOCK.md` hand-off. |
-| [`mock-to-ui`](skills/mock-to-ui/SKILL.md) | Takes an approved mock (a feature folder with a `MOCK.md`) and turns it into production code: real API operations, shared components, translations, loading, empty and error states, and tests. What the user approved stays the same. |
+- [`ui-to-mock`](skills/ui-to-mock/SKILL.md) builds a clickable mock of a screen or flow inside your existing app, using its real routes, layout and theme with fake in-memory data, behind a feature flag that defaults off. It writes no tests, translations or API calls, and leaves a `MOCK.md` hand-off.
+- [`mock-to-ui`](skills/mock-to-ui/SKILL.md) takes an approved mock (a feature folder with a `MOCK.md`) and turns it into production code: real API operations, shared components, translations, loading, empty and error states, and tests. What the user approved stays the same.
 
 They work with any frontend stack that has routes, a component library or theme, and ideally a
 feature-flag system. The agent reads your project's own conventions (`AGENTS.md`, `CLAUDE.md`,
